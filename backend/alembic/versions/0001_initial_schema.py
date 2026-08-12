@@ -3,6 +3,7 @@
 Revision ID: 0001
 Revises:
 Create Date: 2026-08-11 00:00:00
+
 """
 from typing import Sequence, Union
 from alembic import op
@@ -14,13 +15,15 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-# Enum referenced but NOT created by SQLAlchemy — managed via raw SQL below
-user_role = sa.Enum('patient', 'psychologist', name='user_role', create_type=False)
-
 
 def upgrade() -> None:
-    # Idempotent: create enum only if it does not exist
-    op.execute("DO $$ BEGIN CREATE TYPE user_role AS ENUM ('patient','psychologist'); EXCEPTION WHEN duplicate_object THEN null; END $$")
+    # Create enum type idempotently via raw SQL — SQLAlchemy will NOT touch it
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE user_role AS ENUM ('patient', 'psychologist');
+        EXCEPTION WHEN duplicate_object THEN null;
+        END $$
+    """)
 
     op.create_table(
         'users',
@@ -29,7 +32,8 @@ def upgrade() -> None:
         sa.Column('phone', sa.String(), nullable=True, unique=True),
         sa.Column('full_name', sa.String(), nullable=False),
         sa.Column('hashed_password', sa.String(), nullable=False),
-        sa.Column('role', user_role, nullable=False),
+        # Use TEXT with explicit cast — avoids SQLAlchemy auto-creating the type
+        sa.Column('role', sa.Text(), nullable=False),
         sa.Column('is_active', sa.Boolean(), server_default=sa.true()),
         sa.Column('is_verified', sa.Boolean(), server_default=sa.false()),
         sa.Column('totp_secret', sa.String(), nullable=True),
@@ -37,6 +41,8 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime(timezone=True), onupdate=sa.func.now(), nullable=True),
     )
+    # Apply the enum type to the column after table creation
+    op.execute("ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role")
     op.create_index('ix_users_email', 'users', ['email'], unique=True)
 
     op.create_table(
