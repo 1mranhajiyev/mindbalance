@@ -1,8 +1,7 @@
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 import uuid
+from sqlalchemy import Column, String, Boolean, Text, DateTime, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
 from app.core.database import Base
 
 
@@ -18,10 +17,7 @@ class TherapyNote(Base):
     method_used = Column(String, nullable=True)
     next_session_plan = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    psychologist = relationship("PsychologistProfile", back_populates="notes")
-    session = relationship("TherapySession", back_populates="notes")
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
 
 
 class JournalEntry(Base):
@@ -33,7 +29,5 @@ class JournalEntry(Base):
     event = Column(Text, nullable=True)
     thought = Column(Text, nullable=True)
     content = Column(Text, nullable=False)
-    is_private = Column(String, default=True)
+    is_private = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    patient = relationship("PatientProfile", back_populates="journal_entries")

@@ -1,8 +1,7 @@
-from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 import uuid
+from sqlalchemy import Column, String, Boolean, Text, DateTime, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
 from app.core.database import Base
 
 
@@ -19,5 +18,3 @@ class Task(Base):
     patient_response = Column(Text, nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    patient = relationship("PatientProfile", back_populates="tasks")

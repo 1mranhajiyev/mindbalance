@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 import uuid
+from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql import func
 from app.core.database import Base
 
 
@@ -13,15 +12,12 @@ class Goal(Base):
     patient_id = Column(UUID(as_uuid=True), ForeignKey("patient_profiles.id"), nullable=False)
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
-    initial_score = Column(Integer, nullable=False)  # 0-10
+    initial_score = Column(Integer, nullable=False)
     current_score = Column(Integer, nullable=False)
     target_score = Column(Integer, nullable=False)
-    status = Column(String, default="active")  # active, completed, paused
+    status = Column(String, default="active")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    patient = relationship("PatientProfile", back_populates="goals")
-    progress_logs = relationship("GoalProgressLog", back_populates="goal")
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
 
 
 class GoalProgressLog(Base):
@@ -32,5 +28,3 @@ class GoalProgressLog(Base):
     score = Column(Integer, nullable=False)
     note = Column(Text, nullable=True)
     logged_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    goal = relationship("Goal", back_populates="progress_logs")
