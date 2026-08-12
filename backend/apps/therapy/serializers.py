@@ -6,10 +6,18 @@ class TherapySessionSerializer(serializers.ModelSerializer):
     patient_name = serializers.CharField(source='patient.user.full_name', read_only=True)
     psychologist_name = serializers.CharField(source='psychologist.user.full_name', read_only=True)
     patient_id = serializers.UUIDField(write_only=True, required=False)
+    psychologist_id = serializers.UUIDField(write_only=True, required=False)
 
     class Meta:
         model = TherapySession
-        fields = '__all__'
+        fields = [
+            'id', 'patient', 'patient_id', 'patient_name', 'psychologist', 'psychologist_id',
+            'psychologist_name', 'scheduled_at', 'duration_minutes', 'format', 'status',
+            'started_at', 'ended_at', 'price', 'is_paid', 'webrtc_room_id', 'created_at',
+        ]
+        read_only_fields = [
+            'patient', 'psychologist', 'patient_name', 'psychologist_name', 'created_at',
+        ]
 
 
 class TaskSerializer(serializers.ModelSerializer):
