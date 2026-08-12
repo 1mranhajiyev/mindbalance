@@ -21,6 +21,10 @@ services:
       - "8000:8000"
     env_file:
       - ./backend/.env
+    environment:
+      # Override DATABASE_URL so it always points to the db container,
+      # even if backend/.env has a localhost URL
+      DATABASE_URL: postgresql://mindbalance:mindbalance@db:5432/mindbalance
     depends_on:
       db:
         condition: service_healthy
