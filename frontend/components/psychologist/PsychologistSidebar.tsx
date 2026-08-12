@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
+import { useQueryClient } from '@tanstack/react-query'
 import { LayoutDashboard, Users, Calendar, ClipboardList, BookOpen, BarChart2, CreditCard, LogOut } from 'lucide-react'
 
 const navItems = [
@@ -18,14 +19,18 @@ export default function PsychologistSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { user, logout } = useAuthStore()
+  const qc = useQueryClient()
 
-  const handleLogout = () => { logout(); router.push('/login') }
+  const handleLogout = () => {
+    qc.clear()
+    logout()
+    router.push('/login')
+  }
 
-  const initials = user?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase() || 'P'
+  const initials = user?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'P'
 
   return (
     <aside className="w-64 bg-white border-r border-slate-100 flex flex-col fixed h-full z-10">
-      {/* Brand */}
       <div className="px-5 py-5 border-b border-slate-100">
         <div className="flex items-center gap-3">
           <div className="logo-icon">
@@ -40,29 +45,19 @@ export default function PsychologistSidebar() {
           </div>
         </div>
       </div>
-
-      {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href
           return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                active
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
+            <Link key={href} href={href} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              active ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+            }`}>
               <Icon size={16} strokeWidth={active ? 2.5 : 2} />
               {label}
             </Link>
           )
         })}
       </nav>
-
-      {/* User + Logout */}
       <div className="px-3 py-4 border-t border-slate-100 space-y-1">
         <div className="flex items-center gap-3 px-3 py-2">
           <div className="avatar avatar-sm">{initials}</div>
@@ -71,10 +66,7 @@ export default function PsychologistSidebar() {
             <p className="text-xs text-slate-400 truncate">{user?.email}</p>
           </div>
         </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 w-full transition-all"
-        >
+        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 w-full transition-all">
           <LogOut size={16} />
           Çıxış
         </button>
