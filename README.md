@@ -1,146 +1,41 @@
-# 🧠 MindBalance
+# MindBalance
 
 **Sənin rifahın, bizim prioritetimiz**
 
-MindBalance — psixoloq və pasiyent üçün vahid rəqəmsal terapiya platforması. Hisslər, düşüncələr, seanslar, tapşırıqlar, inkişaf izləmə və daha çox — hamısı bir yerdə.
+Psixoloq və pasiyent üçün vahid rəqəmsal terapiya platforması.
 
----
-
-## 📌 Layihə haqqında
-
-Bu platforma pasiyentin terapiyaya başladığı ilk gündən etibarən:
-- Terapiyaya müraciət səbəbini
-- Emosional vəziyyətini (0–10 şkala)
-- Düşüncə və davranış nümunələrini
-- Terapiya məqsədlərini
-- Seans tarixçəsini
-- Zamanla baş verən dəyişiklikləri
-
-bir sistemdə toplayır və həm pasiyentə, həm psixoloqa prosesi sistemli şəkildə izləmək imkanı yaradır.
-
----
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Hissə | Texnologiya |
 |---|---|
 | Frontend | Next.js 14 (App Router) |
-| Backend | FastAPI (Python) |
+| Backend | Django REST Framework |
 | Database | PostgreSQL |
-| Auth | JWT + 2FA |
-| Video görüş | WebRTC (tətbiq daxili) |
+| Auth | JWT + 2FA (TOTP) |
+| Video | WebRTC |
 | Styling | Tailwind CSS |
-| State | Zustand |
-| ORM | SQLAlchemy + Alembic |
 
----
-
-## 👥 İstifadəçi rolları
-
-### 🙍 Pasiyent
-- Gündəlik emosional check-in (0–10 şkala)
-- Düşüncə və hiss qeydləri
-- Şəxsi gündəlik
-- Ev tapşırıqları
-- Terapiya məqsədlərini izləmə
-- Seans planı və video görüş
-- İnkişaf qrafikləri
-- "Əvvəlki mən — İndiki mən" müqayisəsi
-- Terapiya xəritəsi (timeline)
-- Mənim uğurlarım
-
-### 🧑‍⚕️ Psixoloq
-- Pasiyentlər siyahısı və profili
-- Seans planlaşdırma (online / offline)
-- Terapiya qeydləri
-- Ev tapşırığı yaratma
-- Material göndərmə (PDF, audio, video)
-- CBT / Schema Therapy alətləri
-- İnkişaf statistikası
-- Ödəniş və gəlir dashboardu
-
----
-
-## 📁 Layihə strukturu
-
-```
-mindbalance/
-├── frontend/          # Next.js tətbiqi
-│   ├── app/
-│   │   ├── (auth)/    # Login, Register
-│   │   ├── patient/   # Pasiyent səhifələri
-│   │   └── psychologist/ # Psixoloq paneli
-│   ├── components/
-│   ├── hooks/
-│   ├── store/         # Zustand state
-│   └── lib/
-├── backend/           # FastAPI tətbiqi
-│   ├── app/
-│   │   ├── api/       # Route-lar
-│   │   ├── models/    # SQLAlchemy modellər
-│   │   ├── schemas/   # Pydantic sxemlər
-│   │   ├── services/  # Business logic
-│   │   └── core/      # Config, security
-│   ├── alembic/       # DB mirasiyaları
-│   └── requirements.txt
-├── docker-compose.yml
-└── README.md
-```
-
----
-
-## 🔒 Təhlükəsizlik
-
-- 256-bit məlumat şifrələməsi
-- İki mərhəli doğrulama (2FA)
-- JWT token əsaslı auth
-- Rol əsaslı giriş nəzarəti (RBAC)
-- Audit loglama
-- Video görüşün qeyd edilməsi qadağandır
-- Pasiyent məlumatları yalnız ona aid psixoloqa görünür
-
----
-
-## 🚀 MVP Funksiyaları (v1.0)
-
-- [x] Repo yaradılıb
-- [ ] Auth sistemi (JWT + 2FA)
-- [ ] Pasiyent dashboardu
-- [ ] Psixoloq dashboardu
-- [ ] Gündəlik emosional check-in
-- [ ] Düşüncə izləmə
-- [ ] Tapşırıq sistemi
-- [ ] Seans planlaşdırma
-- [ ] Tətbiq daxili video görüş (WebRTC)
-- [ ] İnkişaf qrafiklərı
-- [ ] Terapiya xəritəsi (timeline)
-- [ ] Ödəniş sistemi
-- [ ] Məxfilik və təhlükəsizlik sistemi
-
----
-
-## ⚙️ Quraşdırma
+## Quraşdırma
 
 ```bash
-# Repo klonla
-git clone https://github.com/1mranhajiyev/mindbalance.git
-cd mindbalance
-
 # Backend
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+python manage.py migrate
+python manage.py seed_data  # test məlumatları
+python manage.py runserver 0.0.0.0:8001
 
 # Frontend
 cd frontend
 npm install
-npm run dev
+npm run dev -- -p 3002
 ```
 
----
+## API
 
-## 📄 Lisenziya
+- Swagger: `http://localhost:8001/docs/`
+- Base URL: `http://localhost:8001/api/v1/`
 
-Bu layihə xüsusi (private) lisenziya altındadır. İcazəsiz istifadə qadağandır.
+Test hesabları (seed): `SecurePass1!`

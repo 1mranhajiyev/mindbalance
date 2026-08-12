@@ -161,6 +161,15 @@ class TherapySessionViewSet(viewsets.ModelViewSet):
             for signal in signals
         ])
 
+    @action(detail=True, methods=['post'], url_path='mark-paid')
+    def mark_paid(self, request, pk=None):
+        session = self.get_object()
+        if request.user.role != 'psychologist':
+            raise PermissionDenied('Yalnız psixoloq ödənişi təsdiqləyə bilər.')
+        session.is_paid = True
+        session.save(update_fields=['is_paid'])
+        return Response(TherapySessionSerializer(session).data)
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
@@ -199,11 +208,12 @@ class GoalViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        qs = Goal.objects.prefetch_related('milestones', 'progress_logs')
         if user.role == 'psychologist':
             from apps.users.assignments import get_assigned_patients
             assigned = get_assigned_patients(user.psychologist_profile)
-            return Goal.objects.filter(patient__in=assigned)
-        return Goal.objects.filter(patient__user=user)
+            return qs.filter(patient__in=assigned)
+        return qs.filter(patient__user=user)
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -217,3 +227,19 @@ class GoalViewSet(viewsets.ModelViewSet):
             patient = user.patient_profile
             psychologists = get_assigned_psychologists(patient)
             serializer.save(patient=patient, psychologist=psychologists.first())
+
+    @action(detail=True, methods=['post'])
+    def progress(self, request, pk=None):
+        goal = self.get_object()
+        score = request.data.get('score')
+        if score is None:
+            return Response({'detail': 'score tələb olunur.'}, status=status.HTTP_400_BAD_REQUEST)
+        score = int(score)
+        note = request.data.get('note', '')
+        from .models import GoalProgressLog
+        GoalProgressLog.objects.create(goal=goal, score=score, note=note)
+        goal.current_score = score
+        if score >= goal.target_score:
+            goal.is_achieved = True
+        goal.save(update_fields=['current_score', 'is_achieved', 'updated_at'])
+        return Response(GoalSerializer(goal).data)

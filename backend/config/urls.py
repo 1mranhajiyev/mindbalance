@@ -24,6 +24,8 @@ urlpatterns = [
     path('api/v1/goals/', include('apps.therapy.urls.goals')),
     path('api/v1/checkins/', include('apps.content.urls.checkins')),
     path('api/v1/notes/', include('apps.content.urls.notes')),
+    path('api/v1/', include('apps.content.urls.extras')),
+    path('api/v1/wellness/', include('apps.therapy.urls.wellness')),
     path('api/v1/onboarding/', include('apps.onboarding.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

@@ -109,20 +109,35 @@ class PaymentsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        if request.user.role != 'psychologist':
-            return Response({'detail': 'Yalnız psixoloqlar üçün.'}, status=403)
-        profile = request.user.psychologist_profile
-        sessions = TherapySession.objects.filter(
-            psychologist=profile, price__isnull=False
-        ).select_related('patient__user').order_by('-scheduled_at')
-        data = [
-            {
-                'id': str(s.id),
-                'patient_name': s.patient.user.full_name,
-                'amount': s.price,
-                'status': 'paid' if s.is_paid else 'pending',
-                'created_at': s.scheduled_at.isoformat(),
-            }
-            for s in sessions
-        ]
-        return Response(data)
+        if request.user.role == 'psychologist':
+            profile = request.user.psychologist_profile
+            sessions = TherapySession.objects.filter(
+                psychologist=profile, price__isnull=False
+            ).select_related('patient__user').order_by('-scheduled_at')
+            data = [
+                {
+                    'id': str(s.id),
+                    'patient_name': s.patient.user.full_name,
+                    'amount': s.price,
+                    'status': 'paid' if s.is_paid else 'pending',
+                    'created_at': s.scheduled_at.isoformat(),
+                }
+                for s in sessions
+            ]
+            return Response(data)
+        if request.user.role == 'patient':
+            sessions = TherapySession.objects.filter(
+                patient=request.user.patient_profile, price__isnull=False
+            ).select_related('psychologist__user').order_by('-scheduled_at')
+            data = [
+                {
+                    'id': str(s.id),
+                    'psychologist_name': s.psychologist.user.full_name,
+                    'amount': s.price,
+                    'status': 'paid' if s.is_paid else 'pending',
+                    'scheduled_at': s.scheduled_at.isoformat(),
+                }
+                for s in sessions
+            ]
+            return Response(data)
+        return Response({'detail': 'İcazə yoxdur.'}, status=403)

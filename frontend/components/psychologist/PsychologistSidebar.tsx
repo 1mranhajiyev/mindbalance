@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useQueryClient } from '@tanstack/react-query'
-import { LayoutDashboard, Users, Calendar, ClipboardList, BookOpen, BarChart2, CreditCard, LogOut, Inbox, UserCircle } from 'lucide-react'
+import { LayoutDashboard, Users, Calendar, ClipboardList, BookOpen, BarChart2, CreditCard, LogOut, Inbox, UserCircle, Target, FileText } from 'lucide-react'
 import { SidebarNav } from '@/components/layout/SidebarNav'
 
 const navItems = [
@@ -12,6 +12,8 @@ const navItems = [
   { href: '/psychologist/patients',   label: 'Pasiyentlər',    icon: Users },
   { href: '/psychologist/sessions',   label: 'Seanslar',       icon: Calendar },
   { href: '/psychologist/tasks',      label: 'Tapşırıqlar',    icon: ClipboardList },
+  { href: '/psychologist/goals',      label: 'Məqsədlər',      icon: Target },
+  { href: '/psychologist/materials',  label: 'Materiallar',    icon: FileText },
   { href: '/psychologist/notes',        label: 'Qeydlər',        icon: BookOpen },
   { href: '/psychologist/statistics', label: 'Statistika',     icon: BarChart2 },
   { href: '/psychologist/payments',   label: 'Ödənişlər',      icon: CreditCard },

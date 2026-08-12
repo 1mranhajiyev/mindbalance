@@ -3,6 +3,13 @@ import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { format } from 'date-fns'
+const scoreLabels: Record<string, string> = {
+  anxiety: 'Narahatlıq',
+  stress: 'Stress',
+  self_confidence: 'Özünə inam',
+  relationships: 'Münasibətlər',
+  boundaries: 'Sərhədlər',
+}
 
 export default function ProgressPage() {
   const { data: checkins = [] } = useQuery({
@@ -15,6 +22,12 @@ export default function ProgressPage() {
     queryFn: () => api.get('/goals').then(r => r.data)
   })
 
+  const { data: comparison } = useQuery({
+    queryKey: ['progress-comparison'],
+    queryFn: () => api.get('/progress/comparison').then(r => r.data),
+    retry: false,
+  })
+
   const chartData = checkins.slice(0, 30).reverse().map((c: any) => ({
     date: format(new Date(c.created_at), 'd MMM'),
     intensity: c.intensity ?? c.mood_score ?? 0,
@@ -23,6 +36,42 @@ export default function ProgressPage() {
   return (
     <div className="space-y-6">
       <h1 className="page-title">İnkişafım</h1>
+
+      {comparison?.before && (
+        <div className="card">
+          <h2 className="font-semibold text-gray-900 mb-4">Başlanğıc vs İndi</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Başlanğıc (qiymətləndirmə)</p>
+              <div className="space-y-2">
+                {Object.entries(comparison.before).map(([key, val]) => (
+                  <div key={key} className="flex justify-between text-sm">
+                    <span className="text-gray-600">{scoreLabels[key] || key}</span>
+                    <span className="font-semibold text-gray-900">{val as number}/10</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">İndi (check-in ortalaması)</p>
+              {comparison.now?.avg_intensity != null ? (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Orta emosional şiddət</span>
+                    <span className="font-semibold text-primary-700">{comparison.now.avg_intensity}/10</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Check-in sayı</span>
+                    <span className="font-semibold text-gray-900">{comparison.now.checkin_count}</span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">Hələ kifayət qədər check-in yoxdur.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="card">
         <h2 className="font-semibold text-gray-900 mb-4">Son 30 gün — Emosional vəziyyət</h2>
@@ -33,7 +82,7 @@ export default function ProgressPage() {
             <YAxis domain={[0, 10]} tick={{ fontSize: 12 }} />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="intensity" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Şiddət" />
+            <Line type="monotone" dataKey="intensity" stroke="#4a8578" strokeWidth={2} dot={false} name="Şiddət" />
           </LineChart>
         </ResponsiveContainer>
       </div>

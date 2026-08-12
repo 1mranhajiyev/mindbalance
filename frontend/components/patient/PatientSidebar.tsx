@@ -3,14 +3,19 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useQueryClient } from '@tanstack/react-query'
-import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut, Users, UserCircle } from 'lucide-react'
+import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut, Users, UserCircle, Brain, Map, FileText, CreditCard, Target } from 'lucide-react'
 import { SidebarNav } from '@/components/layout/SidebarNav'
 
 const navItems = [
   { href: '/patient/dashboard', label: 'Ana Səhifə', icon: Home },
   { href: '/patient/psychologists', label: 'Psixoloqlarım', icon: Users },
   { href: '/patient/journal', label: 'Gündəliyim', icon: BookOpen },
+  { href: '/patient/thoughts', label: 'Düşüncələr', icon: Brain },
   { href: '/patient/sessions', label: 'Seanslar', icon: Calendar },
+  { href: '/patient/timeline', label: 'Terapiya xəritəsi', icon: Map },
+  { href: '/patient/materials', label: 'Materiallar', icon: FileText },
+  { href: '/patient/payments', label: 'Ödənişlər', icon: CreditCard },
+  { href: '/patient/goals', label: 'Məqsədlər', icon: Target },
   { href: '/patient/progress', label: 'İnkişaf', icon: TrendingUp },
   { href: '/patient/tasks', label: 'Tapşırıqlar', icon: CheckSquare },
   { href: '/patient/profile', label: 'Profil', icon: UserCircle },

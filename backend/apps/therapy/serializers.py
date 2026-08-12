@@ -1,5 +1,8 @@
 from rest_framework import serializers
-from .models import TherapySession, Task, Goal, Milestone
+from .models import (
+    TherapySession, Task, Goal, Milestone, GoalProgressLog,
+    TherapyTimelineEvent, PatientAchievement, TherapyLearning,
+)
 
 
 class TherapySessionSerializer(serializers.ModelSerializer):
@@ -33,8 +36,25 @@ class TaskSerializer(serializers.ModelSerializer):
         read_only_fields = ['patient', 'patient_name', 'created_at', 'updated_at']
 
 
+class MilestoneSerializer(serializers.ModelSerializer):
+    goal_id = serializers.UUIDField(write_only=True, required=False)
+
+    class Meta:
+        model = Milestone
+        fields = ['id', 'goal', 'goal_id', 'title', 'is_completed', 'completed_at', 'created_at']
+        read_only_fields = ['goal', 'created_at']
+
+
+class GoalProgressLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoalProgressLog
+        fields = ['id', 'goal', 'score', 'note', 'created_at']
+        read_only_fields = ['goal', 'created_at']
+
+
 class GoalSerializer(serializers.ModelSerializer):
-    milestones = serializers.SerializerMethodField()
+    milestones = MilestoneSerializer(many=True, read_only=True)
+    progress_logs = GoalProgressLogSerializer(many=True, read_only=True)
     status = serializers.SerializerMethodField()
     patient_id = serializers.UUIDField(write_only=True, required=False)
 
@@ -43,18 +63,39 @@ class GoalSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'patient', 'patient_id', 'psychologist', 'title', 'description',
             'is_achieved', 'initial_score', 'current_score', 'target_score', 'status',
-            'target_date', 'milestones', 'created_at', 'updated_at',
+            'target_date', 'milestones', 'progress_logs', 'created_at', 'updated_at',
         ]
         read_only_fields = ['patient', 'psychologist', 'created_at', 'updated_at']
-
-    def get_milestones(self, obj):
-        return MilestoneSerializer(obj.milestones.all(), many=True).data
 
     def get_status(self, obj):
         return 'completed' if obj.is_achieved else 'active'
 
 
-class MilestoneSerializer(serializers.ModelSerializer):
+class TherapyTimelineEventSerializer(serializers.ModelSerializer):
+    patient_id = serializers.UUIDField(write_only=True, required=False)
+
     class Meta:
-        model = Milestone
-        fields = '__all__'
+        model = TherapyTimelineEvent
+        fields = [
+            'id', 'patient', 'patient_id', 'psychologist', 'title', 'description',
+            'event_date', 'created_at',
+        ]
+        read_only_fields = ['patient', 'psychologist', 'created_at']
+
+
+class PatientAchievementSerializer(serializers.ModelSerializer):
+    patient_id = serializers.UUIDField(write_only=True, required=False)
+
+    class Meta:
+        model = PatientAchievement
+        fields = ['id', 'patient', 'patient_id', 'title', 'description', 'achieved_at', 'created_at']
+        read_only_fields = ['patient', 'created_at']
+
+
+class TherapyLearningSerializer(serializers.ModelSerializer):
+    patient_id = serializers.UUIDField(write_only=True, required=False)
+
+    class Meta:
+        model = TherapyLearning
+        fields = ['id', 'patient', 'patient_id', 'session', 'title', 'content', 'created_at']
+        read_only_fields = ['patient', 'created_at']

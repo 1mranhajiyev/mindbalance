@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
+import NotificationBell from '@/components/layout/NotificationBell'
 
 interface Props {
   sidebar: (opts: { onNavigate: () => void }) => React.ReactNode
@@ -42,7 +43,10 @@ export default function AppShell({ sidebar, panelLabel, children }: Props) {
           </div>
           <span className="font-semibold text-sm text-slate-800">MindBalance</span>
         </div>
-        <span className="text-[10px] uppercase tracking-wider text-primary-600 font-medium">{panelLabel}</span>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <span className="text-[10px] uppercase tracking-wider text-primary-600 font-medium hidden xs:inline">{panelLabel}</span>
+        </div>
       </header>
 
       {/* Backdrop */}

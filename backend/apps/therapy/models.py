@@ -122,3 +122,59 @@ class Milestone(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class GoalProgressLog(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, related_name='progress_logs')
+    score = models.IntegerField()
+    note = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'goal_progress_logs'
+        ordering = ['-created_at']
+
+
+class TherapyTimelineEvent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='timeline_events')
+    psychologist = models.ForeignKey(
+        PsychologistProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='timeline_events'
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    event_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'therapy_timeline_events'
+        ordering = ['-event_date']
+
+
+class PatientAchievement(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='achievements')
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    achieved_at = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'patient_achievements'
+        ordering = ['-achieved_at']
+
+
+class TherapyLearning(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='learnings')
+    session = models.ForeignKey(
+        TherapySession, on_delete=models.SET_NULL, null=True, blank=True, related_name='learnings'
+    )
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'therapy_learnings'
+        ordering = ['-created_at']

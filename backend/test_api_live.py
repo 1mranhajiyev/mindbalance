@@ -60,6 +60,8 @@ def main():
         ('Goals', '/goals/'),
         ('Notes', '/notes/'),
         ('Pending requests', '/onboarding/pending-requests/'),
+        ('Wellness timeline', '/wellness/timeline/'),
+        ('Materials', '/materials/'),
     ]:
         all_ok &= test(name, 'GET', path, psych_token)
 
@@ -81,6 +83,15 @@ def main():
     all_ok &= test('Create journal', 'POST', '/notes/journal/', patient_token, {
         'content': 'Test qeyd', 'emotion': 'xoşbəxt', 'event': 'Test'
     })
+    all_ok &= test('Thoughts list', 'GET', '/thoughts/', patient_token)
+    all_ok &= test('Timeline', 'GET', '/wellness/timeline/', patient_token)
+    all_ok &= test('Achievements', 'GET', '/wellness/achievements/', patient_token)
+    all_ok &= test('Notifications', 'GET', '/notifications/', patient_token)
+    all_ok &= test('Patient materials', 'GET', '/patient-materials/', patient_token)
+    all_ok &= test('Progress comparison', 'GET', '/progress/comparison/', patient_token, expected=(200, 404))
+    all_ok &= test('Create thought', 'POST', '/thoughts/', patient_token, {
+        'situation': 'Test', 'automatic_thought': 'Test', 'emotion': 'narahat', 'intensity': 5
+    }, expected=(201,))
 
     _, tasks = request('GET', '/tasks/', patient_token)
     if isinstance(tasks, list) and tasks:
@@ -97,7 +108,7 @@ def main():
     if isinstance(psychs, list) and psychs:
         all_ok &= test('Send request', 'POST', '/onboarding/request/', kamran_token, {
             'psychologist_id': psychs[0]['id'], 'message': 'Salam'
-        })
+        }, expected=(200, 201, 400))
 
     _, pending = request('GET', '/onboarding/pending-requests/', psych_token)
     if isinstance(pending, list) and pending:

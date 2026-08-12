@@ -63,7 +63,13 @@ export default function LandingPage() {
     )
   }
 
-  if (accessToken && user) return null
+  if (accessToken && user) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <div className="spinner w-7 h-7 border-[3px]" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#f7faf8] text-slate-800">
