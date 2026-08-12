@@ -22,13 +22,12 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      # Override DATABASE_URL so it always points to the db container,
-      # even if backend/.env has a localhost URL
       DATABASE_URL: postgresql://mindbalance:mindbalance@db:5432/mindbalance
     depends_on:
       db:
         condition: service_healthy
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # entrypoint.sh runs: alembic upgrade head && uvicorn
+    # Do NOT add 'command:' here — it would bypass entrypoint.sh
 
   frontend:
     build: ./frontend
