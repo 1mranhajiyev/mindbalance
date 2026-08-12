@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/auth'
 import { Users, Calendar, ClipboardList, TrendingUp } from 'lucide-react'
 import { format } from 'date-fns'
 import { az } from 'date-fns/locale'
+import { getSessionLabel, getSessionStyle, isUpcomingSession } from '@/lib/sessionStatus'
 
 export default function PsychologistDashboard() {
   const { user } = useAuthStore()
@@ -24,7 +25,7 @@ export default function PsychologistDashboard() {
   const todaySessions = sessionList.filter((s: any) => {
     const d = new Date(s.scheduled_at)
     const today = new Date()
-    return d.toDateString() === today.toDateString() && s.status === 'scheduled'
+    return d.toDateString() === today.toDateString() && isUpcomingSession(s)
   })
 
   const stats = [
@@ -72,7 +73,9 @@ export default function PsychologistDashboard() {
                   <p className="text-sm font-semibold text-slate-900">{format(new Date(s.scheduled_at), 'HH:mm', { locale: az })}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{s.duration_minutes} dəqə · {s.format}</p>
                 </div>
-                <span className="badge badge-primary">Planlı</span>
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getSessionStyle(s)}`}>
+                  {getSessionLabel(s)}
+                </span>
               </div>
             ))}
           </div>

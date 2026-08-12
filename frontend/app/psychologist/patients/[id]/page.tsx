@@ -5,6 +5,7 @@ import api from '@/lib/api'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { az } from 'date-fns/locale'
+import { getSessionLabel } from '@/lib/sessionStatus'
 import { ArrowLeft } from 'lucide-react'
 
 export default function PatientDetailPage() {
@@ -58,7 +59,7 @@ export default function PatientDetailPage() {
             <ul className="space-y-2">
               {patientSessions.map((s: any) => (
                 <li key={s.id} className="text-sm text-gray-700">
-                  {format(new Date(s.scheduled_at), 'd MMM yyyy, HH:mm', { locale: az })} — {s.status}
+                  {format(new Date(s.scheduled_at), 'd MMM yyyy, HH:mm', { locale: az })} — {getSessionLabel(s)}
                 </li>
               ))}
             </ul>

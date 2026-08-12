@@ -6,6 +6,7 @@ import CheckInCard from '@/components/patient/CheckInCard'
 import GoalsWidget from '@/components/patient/GoalsWidget'
 import TasksWidget from '@/components/patient/TasksWidget'
 import NextSessionCard from '@/components/patient/NextSessionCard'
+import { isUpcomingSession } from '@/lib/sessionStatus'
 
 export default function PatientDashboard() {
   const { user } = useAuthStore()
@@ -27,7 +28,7 @@ export default function PatientDashboard() {
   const taskList = Array.isArray(tasks) ? tasks : []
   const goalList = Array.isArray(goals) ? goals : []
 
-  const upcomingSession = sessionList.find((s: any) => s.status === 'scheduled')
+  const upcomingSession = sessionList.find((s: any) => isUpcomingSession(s))
   const pendingTasks = taskList.filter((t: any) => !t.is_completed)
 
   return (

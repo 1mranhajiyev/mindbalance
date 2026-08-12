@@ -1,12 +1,16 @@
 'use client'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { format } from 'date-fns'
 import { az } from 'date-fns/locale'
+import { Video } from 'lucide-react'
+import { getSessionLabel, getSessionStyle, canJoinSession } from '@/lib/sessionStatus'
 
 export default function PsychologistSessions() {
+  const router = useRouter()
   const qc = useQueryClient()
   const [patientId, setPatientId] = useState('')
   const [scheduledAt, setScheduledAt] = useState('')
@@ -14,7 +18,8 @@ export default function PsychologistSessions() {
 
   const { data: sessions = [], isLoading } = useQuery({
     queryKey: ['psych-sessions'],
-    queryFn: () => api.get('/sessions').then(r => r.data)
+    queryFn: () => api.get('/sessions').then(r => r.data),
+    refetchInterval: 3000,
   })
 
   const { data: patients = [] } = useQuery({
@@ -79,16 +84,25 @@ export default function PsychologistSessions() {
         ) : (
           <div className="space-y-3">
             {sessions.map((s: any) => (
-              <div key={s.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div key={s.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl gap-3">
                 <div>
                   <p className="font-medium text-gray-900 text-sm">{s.patient_name || 'Pasiyent'}</p>
                   <p className="text-xs text-gray-500">{format(new Date(s.scheduled_at), 'd MMMM yyyy, HH:mm', { locale: az })}</p>
                 </div>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                  s.status === 'completed' ? 'bg-green-100 text-green-700' :
-                  s.status === 'scheduled' ? 'bg-violet-100 text-violet-700' :
-                  'bg-gray-100 text-gray-600'
-                }`}>{s.status}</span>
+                <div className="flex items-center gap-2">
+                  {canJoinSession(s) && (
+                    <button
+                      onClick={() => router.push(`/psychologist/sessions/${s.id}/call`)}
+                      className="btn-primary text-xs flex items-center gap-1.5 px-3 py-1.5"
+                    >
+                      <Video size={14} />
+                      Seansa qoşul
+                    </button>
+                  )}
+                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getSessionStyle(s)}`}>
+                    {getSessionLabel(s)}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
