@@ -22,7 +22,7 @@ export default function ProgressPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">📈 İnkişafım</h1>
+      <h1 className="page-title">İnkişafım</h1>
 
       <div className="card">
         <h2 className="font-semibold text-gray-900 mb-4">Son 30 gün — Emosional vəziyyət</h2>

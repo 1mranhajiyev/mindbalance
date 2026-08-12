@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { getApiErrorMessage } from '@/lib/apiErrors'
+import { User, BriefcaseMedical, Loader2 } from 'lucide-react'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Ad ən az 2 simvol olmalıdır'),
@@ -49,17 +50,21 @@ export default function RegisterPage() {
 
   return (
     <div className="auth-bg">
-      <div className="auth-card" style={{ maxWidth: 460 }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
-          <div className="logo-icon" style={{ marginBottom: '1rem' }}>🧠</div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', marginBottom: '0.25rem' }}>Qeydiyyat</h1>
-          <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>Yeni hesab yaratın</p>
+      <div className="auth-card max-w-[460px]">
+        <div className="flex flex-col items-center mb-8 animate-scale-in">
+          <div className="logo-icon mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26A7 7 0 0 0 12 2z"/>
+              <line x1="9" y1="21" x2="15" y2="21"/>
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Qeydiyyat</h1>
+          <p className="text-sm text-slate-400 mt-1">Yeni hesab yaradın</p>
         </div>
 
         <ApiErrorAlert message={error} />
 
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="form-group">
             <label className="label">Ad Soyad</label>
             <input {...register('full_name')} className="input" placeholder="Ayşel Məmmədova" />
@@ -73,7 +78,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="form-group">
-            <label className="label">Telefon <span style={{ color: '#9ca3af', fontWeight: 400 }}>(istəyə bağlı)</span></label>
+            <label className="label">Telefon <span className="text-slate-400 font-normal">(istəyə bağlı)</span></label>
             <input {...register('phone')} className="input" placeholder="+994 50 123 45 67" />
           </div>
 
@@ -86,52 +91,39 @@ export default function RegisterPage() {
           {/* Role selector */}
           <div className="form-group">
             <label className="label">Rol seçin</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              {(['patient', 'psychologist'] as const).map((role) => (
+            <div className="grid grid-cols-2 gap-3">
+              {(['patient', 'psychologist'] as const).map((role) => {
+                const Icon = role === 'patient' ? User : BriefcaseMedical
+                const active = selectedRole === role
+                return (
                 <button
                   key={role}
                   type="button"
                   onClick={() => handleRoleSelect(role)}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    padding: '1rem',
-                    borderRadius: '0.75rem',
-                    border: selectedRole === role ? '2px solid #4a8578' : '1.5px solid #e2ebe6',
-                    background: selectedRole === role ? '#f0f7f4' : '#ffffff',
-                    cursor: 'pointer',
-                    transition: 'all 180ms ease',
-                    color: selectedRole === role ? '#3d6f63' : '#374151',
-                    fontWeight: selectedRole === role ? 600 : 500,
-                    fontSize: '0.875rem',
-                  }}
+                  className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border text-sm font-medium transition-all ${
+                    active
+                      ? 'border-2 border-primary-500 bg-primary-50 text-primary-700 font-semibold'
+                      : 'border border-slate-200 bg-white text-slate-700 hover:border-primary-200'
+                  }`}
                 >
-                  <span style={{ fontSize: '1.5rem' }}>{role === 'patient' ? '👤' : '👨‍⚕️'}</span>
+                  <Icon size={22} strokeWidth={active ? 2.25 : 2} className={active ? 'text-primary-600' : 'text-slate-400'} />
                   {role === 'patient' ? 'Pasiyent' : 'Psixoloq'}
                 </button>
-              ))}
+              )})}
             </div>
             <input type="hidden" {...register('role')} value={selectedRole} />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary"
-            style={{ width: '100%', marginTop: '0.5rem' }}
-          >
+          <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
             {loading ? (
-              <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }}></span> Qeydiyyat...</>
+              <><Loader2 size={15} className="animate-spin" /> Qeydiyyat...</>
             ) : 'Qeydiyyatdan keç'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', fontSize: '0.875rem', color: '#6b7280', marginTop: '1.5rem' }}>
+        <p className="text-center text-sm text-slate-400 mt-6">
           Artıq hesabınız var?{' '}
-          <Link href="/login" style={{ color: '#4a8578', fontWeight: 600, textDecoration: 'none' }}>Daxil olun</Link>
+          <Link href="/login" className="text-primary-600 font-semibold hover:text-primary-700 transition-colors">Daxil olun</Link>
         </p>
       </div>
     </div>

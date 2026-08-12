@@ -31,8 +31,8 @@ export default function CheckInCard() {
     return (
       <div className="card flex flex-col items-center py-10 gap-3">
         <CheckCircle2 size={40} className="text-emerald-500" strokeWidth={1.5} />
-        <p className="font-semibold text-slate-900">Check-in tamamlandı!</p>
-        <p className="text-sm text-slate-400">Bugünkü vəziyyətiniz qeyd edildi.</p>
+        <p className="font-semibold text-slate-900">Qeyd olundu</p>
+        <p className="text-sm text-slate-400">Bugünkü vəziyyətiniz saxlanıldı.</p>
       </div>
     )
   }
@@ -40,7 +40,7 @@ export default function CheckInCard() {
   return (
     <div className="card">
       <h2 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wide">Bugünkü vəziyyət</h2>
-      <ApiErrorAlert error={mutation.error} fallback="Check-in saxlanıla bilmədi" />
+      <ApiErrorAlert error={mutation.error} fallback="Qeyd saxlanıla bilmədi" />
       <div className="grid grid-cols-3 gap-2 mb-5">
         {emotions.map(({ label, value, icon: Icon, color, activeBg }) => {
           const active = selected === value

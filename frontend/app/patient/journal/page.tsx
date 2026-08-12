@@ -24,7 +24,7 @@ export default function JournalPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">📖 Gündəliyim</h1>
+      <h1 className="page-title">Gündəliyim</h1>
       <div className="card space-y-4">
         <h2 className="font-semibold text-gray-900">Yeni qeyd</h2>
         <ApiErrorAlert error={mutation.error} fallback="Qeyd saxlanıla bilmədi" />

@@ -11,7 +11,7 @@ export default function GoalsWidget({ goals }: { goals: Goal[] }) {
   if (!goals.length) return null
   return (
     <div className="card">
-      <h2 className="font-semibold text-gray-900 mb-4">🎯 Terapiya məqsədlərim</h2>
+      <h2 className="section-title">Terapiya məqsədlərim</h2>
       <div className="space-y-4">
         {goals.slice(0, 3).map(g => (
           <div key={g.id}>

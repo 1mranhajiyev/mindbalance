@@ -23,7 +23,7 @@ export default function TasksPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">✅ Tapşırıqlarım</h1>
+      <h1 className="page-title">Tapşırıqlarım</h1>
       <ApiErrorAlert error={completeMutation.error} fallback="Tapşırıq tamamlana bilmədi" />
       <div className="space-y-3">
         <h2 className="font-semibold text-gray-700">Gözləyən ({pending.length})</h2>

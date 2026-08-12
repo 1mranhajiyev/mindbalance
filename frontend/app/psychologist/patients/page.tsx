@@ -14,7 +14,7 @@ export default function PatientsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">👥 Pasiyentlər</h1>
+      <h1 className="page-title">Pasiyentlər</h1>
       {isLoading && <p className="text-gray-400">Yüklənir...</p>}
       <div className="space-y-3">
         {patients.map((p: any) => (

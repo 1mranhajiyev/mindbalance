@@ -3,7 +3,7 @@ interface Task { id: string; title: string; due_date?: string }
 export default function TasksWidget({ tasks }: { tasks: Task[] }) {
   return (
     <div className="card">
-      <h2 className="font-semibold text-gray-900 mb-3">✅ Tapşırıqlar ({tasks.length})</h2>
+      <h2 className="section-title">Tapşırıqlar ({tasks.length})</h2>
       {tasks.length === 0
         ? <p className="text-gray-400 text-sm">Aktiv tapşırıq yoxdur.</p>
         : <ul className="space-y-2">

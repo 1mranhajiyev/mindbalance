@@ -20,7 +20,7 @@ export default function SessionsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="page-header">
-        <h1 className="page-title">📅 Seanslarım</h1>
+        <h1 className="page-title">Seanslarım</h1>
       </div>
       <div>
         <h2 className="section-title">Gələcək seanslar</h2>
