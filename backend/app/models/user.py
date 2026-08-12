@@ -19,7 +19,8 @@ class User(Base):
     phone = Column(String, unique=True, nullable=True)
     full_name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(Enum(UserRole), nullable=False)
+    # create_type=False: type is managed by Alembic migration, not SQLAlchemy
+    role = Column(Enum(UserRole, name='user_role', create_type=False), nullable=False)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     totp_secret = Column(String, nullable=True)
