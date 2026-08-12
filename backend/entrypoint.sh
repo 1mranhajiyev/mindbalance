@@ -1,8 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-echo "Running Alembic migrations..."
-alembic upgrade head
+echo "Running Django migrations..."
+python manage.py migrate --noinput
 
-echo "Starting Uvicorn..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
+echo "Starting Gunicorn..."
+exec gunicorn config.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers 2 \
+    --reload

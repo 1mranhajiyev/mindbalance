@@ -1,40 +1,50 @@
+version: '3.9'
+
 services:
   db:
-    image: postgres:16
+    image: postgres:16-alpine
+    restart: always
     environment:
       POSTGRES_DB: mindbalance
-      POSTGRES_USER: mindbalance
-      POSTGRES_PASSWORD: mindbalance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mindbalance"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 5
 
   backend:
     build: ./backend
+    restart: always
     ports:
       - "8000:8000"
-    env_file:
-      - ./backend/.env
     environment:
-      DATABASE_URL: postgresql://mindbalance:mindbalance@db:5432/mindbalance
+      SECRET_KEY: django-insecure-dev-key-change-in-prod
+      DEBUG: "True"
+      POSTGRES_DB: mindbalance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      CORS_ALLOWED_ORIGINS: http://localhost:3000
     depends_on:
       db:
         condition: service_healthy
-    # entrypoint.sh runs: alembic upgrade head && uvicorn
-    # Do NOT add 'command:' here — it would bypass entrypoint.sh
+    volumes:
+      - ./backend:/app
 
   frontend:
     build: ./frontend
+    restart: always
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      NEXT_PUBLIC_API_URL: http://localhost:8000
     depends_on:
       - backend
 
