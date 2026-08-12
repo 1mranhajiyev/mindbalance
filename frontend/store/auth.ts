@@ -16,18 +16,27 @@ interface AuthState {
   setUser: (user: User) => void
   setTokens: (access: string, refresh: string) => void
   logout: () => void
+  isAuthenticated: () => boolean
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       accessToken: null,
       refreshToken: null,
       setUser: (user) => set({ user }),
       setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
       logout: () => set({ user: null, accessToken: null, refreshToken: null }),
+      isAuthenticated: () => !!get().accessToken && !!get().user,
     }),
-    { name: 'mindbalance-auth' }
+    {
+      name: 'mindbalance-auth',
+      partialize: (state) => ({
+        user: state.user,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+      }),
+    }
   )
 )

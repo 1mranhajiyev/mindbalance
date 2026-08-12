@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -20,12 +20,18 @@ type FormData = z.infer<typeof schema>
 
 export default function LoginPage() {
   const router = useRouter()
-  const { setUser, setTokens } = useAuthStore()
+  const { user, accessToken, setUser, setTokens } = useAuthStore()
   const [requires2FA, setRequires2FA] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) })
+
+  useEffect(() => {
+    if (accessToken && user) {
+      router.replace(user.role === 'patient' ? '/patient/dashboard' : '/psychologist/dashboard')
+    }
+  }, [accessToken, user, router])
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
@@ -34,9 +40,9 @@ export default function LoginPage() {
       const res = await api.post('/auth/login', data)
       if (res.data.requires_2fa) { setRequires2FA(true); return }
       setTokens(res.data.access, res.data.refresh)
-      const me = await api.get('/auth/me')
-      setUser(me.data)
-      router.push(me.data.role === 'patient' ? '/patient/dashboard' : '/psychologist/dashboard')
+      const profile = res.data.user ?? (await api.get('/auth/me')).data
+      setUser(profile)
+      router.push(profile.role === 'patient' ? '/patient/dashboard' : '/psychologist/dashboard')
     } catch (e: any) {
       setError(getApiErrorMessage(e, 'Giriş mümkün olmadı'))
     } finally {

@@ -19,7 +19,9 @@ export default function PsychologistDashboard() {
     queryFn: () => api.get('/sessions').then(r => r.data)
   })
 
-  const todaySessions = sessions.filter((s: any) => {
+  const sessionList = Array.isArray(sessions) ? sessions : []
+
+  const todaySessions = sessionList.filter((s: any) => {
     const d = new Date(s.scheduled_at)
     const today = new Date()
     return d.toDateString() === today.toDateString() && s.status === 'scheduled'
