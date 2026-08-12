@@ -14,14 +14,14 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-user_role_enum = sa.Enum('patient', 'psychologist', name='user_role')
+# Enum referenced but NOT created by SQLAlchemy — managed via raw SQL below
+user_role = sa.Enum('patient', 'psychologist', name='user_role', create_type=False)
 
 
 def upgrade() -> None:
-    # Create enum only if it doesn't exist
-    user_role_enum.create(op.get_bind(), checkfirst=True)
+    # Idempotent: create enum only if it does not exist
+    op.execute("DO $$ BEGIN CREATE TYPE user_role AS ENUM ('patient','psychologist'); EXCEPTION WHEN duplicate_object THEN null; END $$")
 
-    # --- users ---
     op.create_table(
         'users',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -29,7 +29,7 @@ def upgrade() -> None:
         sa.Column('phone', sa.String(), nullable=True, unique=True),
         sa.Column('full_name', sa.String(), nullable=False),
         sa.Column('hashed_password', sa.String(), nullable=False),
-        sa.Column('role', sa.Enum('patient', 'psychologist', name='user_role', create_type=False), nullable=False),
+        sa.Column('role', user_role, nullable=False),
         sa.Column('is_active', sa.Boolean(), server_default=sa.true()),
         sa.Column('is_verified', sa.Boolean(), server_default=sa.false()),
         sa.Column('totp_secret', sa.String(), nullable=True),
@@ -39,7 +39,6 @@ def upgrade() -> None:
     )
     op.create_index('ix_users_email', 'users', ['email'], unique=True)
 
-    # --- psychologist_profiles ---
     op.create_table(
         'psychologist_profiles',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -50,7 +49,6 @@ def upgrade() -> None:
         sa.Column('session_price', sa.Integer(), nullable=True),
     )
 
-    # --- patient_profiles ---
     op.create_table(
         'patient_profiles',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -63,7 +61,6 @@ def upgrade() -> None:
         sa.Column('initial_expectations', sa.Text(), nullable=True),
     )
 
-    # --- therapy_sessions ---
     op.create_table(
         'therapy_sessions',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -84,7 +81,6 @@ def upgrade() -> None:
     op.create_index('ix_sessions_psychologist', 'therapy_sessions', ['psychologist_id'])
     op.create_index('ix_sessions_scheduled', 'therapy_sessions', ['scheduled_at'])
 
-    # --- checkins ---
     op.create_table(
         'checkins',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -100,7 +96,6 @@ def upgrade() -> None:
     op.create_index('ix_checkins_patient', 'checkins', ['patient_id'])
     op.create_index('ix_checkins_created', 'checkins', ['created_at'])
 
-    # --- goals ---
     op.create_table(
         'goals',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -115,7 +110,6 @@ def upgrade() -> None:
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     )
 
-    # --- goal_progress_logs ---
     op.create_table(
         'goal_progress_logs',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -125,7 +119,6 @@ def upgrade() -> None:
         sa.Column('logged_at', sa.DateTime(timezone=True), server_default=sa.func.now()),
     )
 
-    # --- tasks ---
     op.create_table(
         'tasks',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -141,7 +134,6 @@ def upgrade() -> None:
     )
     op.create_index('ix_tasks_patient', 'tasks', ['patient_id'])
 
-    # --- therapy_notes ---
     op.create_table(
         'therapy_notes',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -158,7 +150,6 @@ def upgrade() -> None:
     op.create_index('ix_notes_patient', 'therapy_notes', ['patient_id'])
     op.create_index('ix_notes_psychologist', 'therapy_notes', ['psychologist_id'])
 
-    # --- journal_entries ---
     op.create_table(
         'journal_entries',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -185,4 +176,4 @@ def downgrade() -> None:
     op.drop_table('patient_profiles')
     op.drop_table('psychologist_profiles')
     op.drop_table('users')
-    user_role_enum.drop(op.get_bind(), checkfirst=True)
+    op.execute('DROP TYPE IF EXISTS user_role')
