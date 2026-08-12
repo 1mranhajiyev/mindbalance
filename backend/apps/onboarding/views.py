@@ -8,6 +8,7 @@ from .models import OnboardingAssessment, PatientConnectionRequest
 from .serializers import (
     OnboardingAssessmentSerializer,
     PatientConnectionRequestSerializer,
+    PendingRequestDetailSerializer,
     ConnectionRequestCreateSerializer,
     ConnectionRespondSerializer,
 )
@@ -176,8 +177,8 @@ class PendingRequestsView(APIView):
         requests_qs = PatientConnectionRequest.objects.filter(
             psychologist=request.user.psychologist_profile,
             status='pending',
-        ).select_related('patient__user')
-        return Response(PatientConnectionRequestSerializer(requests_qs, many=True).data)
+        ).select_related('patient__user', 'patient__assessment')
+        return Response(PendingRequestDetailSerializer(requests_qs, many=True).data)
 
 
 class RespondRequestView(APIView):

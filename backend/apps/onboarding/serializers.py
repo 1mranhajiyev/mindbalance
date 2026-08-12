@@ -28,6 +28,27 @@ class PatientConnectionRequestSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'patient', 'status', 'created_at', 'responded_at']
 
 
+class PendingRequestDetailSerializer(serializers.ModelSerializer):
+    patient_name = serializers.CharField(source='patient.user.full_name', read_only=True)
+    patient_email = serializers.EmailField(source='patient.user.email', read_only=True)
+    patient_phone = serializers.CharField(source='patient.user.phone', read_only=True)
+    patient_id = serializers.UUIDField(source='patient.id', read_only=True)
+    assessment = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PatientConnectionRequest
+        fields = [
+            'id', 'patient_id', 'patient_name', 'patient_email', 'patient_phone',
+            'message', 'status', 'created_at', 'assessment',
+        ]
+
+    def get_assessment(self, obj):
+        assessment = getattr(obj.patient, 'assessment', None)
+        if not assessment:
+            return None
+        return OnboardingAssessmentSerializer(assessment).data
+
+
 class ConnectionRequestCreateSerializer(serializers.Serializer):
     psychologist_id = serializers.UUIDField()
     message = serializers.CharField(required=False, allow_blank=True)
