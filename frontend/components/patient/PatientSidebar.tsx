@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut } from 'lucide-react'
 
@@ -14,7 +14,13 @@ const navItems = [
 
 export default function PatientSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { logout } = useAuthStore()
+
+  const handleLogout = () => {
+    logout()
+    router.push('/login')
+  }
 
   return (
     <aside className="w-64 bg-white border-r border-gray-100 flex flex-col fixed h-full z-10">
@@ -47,7 +53,7 @@ export default function PatientSidebar() {
       </nav>
       <div className="p-4 border-t border-gray-100">
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 w-full"
         >
           <LogOut size={18} />
