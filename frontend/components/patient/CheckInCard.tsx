@@ -43,7 +43,7 @@ export default function CheckInCard() {
             key={e.value}
             onClick={() => setSelected(e.value)}
             className={`flex flex-col items-center gap-1 py-3 rounded-xl border-2 transition-all text-sm ${
-              selected === e.value ? 'border-primary-500 bg-primary-50' : 'border-gray-100 hover:border-gray-200'
+              selected === e.value ? 'border-violet-500 bg-violet-50' : 'border-gray-100 hover:border-gray-200'
             }`}
           >
             <span className="text-2xl">{e.emoji}</span>
@@ -55,7 +55,7 @@ export default function CheckInCard() {
         <>
           <div className="mb-4">
             <label className="label">Şiddət: {intensity}/10</label>
-            <input type="range" min={0} max={10} value={intensity} onChange={e => setIntensity(Number(e.target.value))} className="w-full accent-primary-600" />
+            <input type="range" min={0} max={10} value={intensity} onChange={e => setIntensity(Number(e.target.value))} className="w-full accent-violet-600" />
           </div>
           <div className="mb-4">
             <label className="label">Səbəb (istəyə bağlı)</label>

@@ -9,7 +9,7 @@ export default function TasksWidget({ tasks }: { tasks: Task[] }) {
         : <ul className="space-y-2">
             {tasks.slice(0, 4).map(t => (
               <li key={t.id} className="flex items-center gap-2 text-sm text-gray-700">
-                <span className="w-2 h-2 rounded-full bg-primary-400 flex-shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-violet-400 flex-shrink-0" />
                 {t.title}
               </li>
             ))}
