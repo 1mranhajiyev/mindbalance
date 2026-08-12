@@ -11,6 +11,8 @@ import api from '@/lib/api'
 import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { getApiErrorMessage } from '@/lib/apiErrors'
 import { KeyRound, Mail, Loader2 } from 'lucide-react'
+import PublicHeader from '@/components/landing/PublicHeader'
+import { MindBalanceLogo } from '@/components/brand/MindBalanceLogo'
 
 const schema = z.object({
   email: z.string().email('Düzgün email daxil edin'),
@@ -29,7 +31,6 @@ export default function LoginPage() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) })
 
-  // URL-də parol/email qalmasın (JS yüklənməyəndə form GET ilə gedə bilər)
   useEffect(() => {
     const url = new URL(window.location.href)
     if (!url.searchParams.has('email') && !url.searchParams.has('password')) return
@@ -62,67 +63,66 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-bg">
-      <div className="auth-card">
-        <div className="flex flex-col items-center mb-8 animate-scale-in">
-          <div className="logo-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26A7 7 0 0 0 12 2z"/>
-              <line x1="9" y1="21" x2="15" y2="21"/>
-            </svg>
-          </div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">MindBalance</h1>
-          <p className="text-sm text-slate-400 mt-1">Hesabınıza daxil olun</p>
-        </div>
+    <div className="min-h-screen bg-[#f7faf8] relative">
+      <PublicHeader showProfile={false} />
 
-        <ApiErrorAlert message={error} />
-
-        <form
-          method="post"
-          action="/login"
-          noValidate
-          onSubmit={(e) => {
-            e.preventDefault()
-            void handleSubmit(onSubmit)(e)
-          }}
-          className="space-y-4"
-        >
-          <div className="form-group">
-            <label className="label">Email</label>
-            <div className="relative">
-              <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input {...register('email')} type="email" className="input pl-9" placeholder="email@example.com" />
+      <div className="auth-bg min-h-screen pt-20 pb-10">
+        <div className="auth-card">
+          <div className="flex flex-col items-center mb-8 animate-scale-in">
+            <div className="logo-icon mb-4">
+              <MindBalanceLogo size={20} />
             </div>
-            {errors.email && <p className="form-error">{errors.email.message}</p>}
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">MindBalance</h1>
+            <p className="text-sm text-slate-400 mt-1">Hesabınıza daxil olun</p>
           </div>
 
-          <div className="form-group">
-            <label className="label">Parol</label>
-            <div className="relative">
-              <KeyRound size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input {...register('password')} type="password" className="input pl-9" placeholder="••••••••" />
-            </div>
-            {errors.password && <p className="form-error">{errors.password.message}</p>}
-          </div>
+          <ApiErrorAlert message={error} />
 
-          {requires2FA && (
+          <form
+            method="post"
+            action="/login"
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault()
+              void handleSubmit(onSubmit)(e)
+            }}
+            className="space-y-4"
+          >
             <div className="form-group">
-              <label className="label">2FA Kodu</label>
-              <input {...register('totp_code')} type="text" className="input tracking-widest text-center" placeholder="— — — — — —" maxLength={6} />
+              <label className="label">Email</label>
+              <div className="relative">
+                <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input {...register('email')} type="email" className="input pl-9" placeholder="email@example.com" autoComplete="email" />
+              </div>
+              {errors.email && <p className="form-error">{errors.email.message}</p>}
             </div>
-          )}
 
-          <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
-            {loading ? <><Loader2 size={15} className="animate-spin" /> Giriş edilir...</> : 'Daxil ol'}
-          </button>
-        </form>
+            <div className="form-group">
+              <label className="label">Parol</label>
+              <div className="relative">
+                <KeyRound size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input {...register('password')} type="password" className="input pl-9" placeholder="••••••••" autoComplete="current-password" />
+              </div>
+              {errors.password && <p className="form-error">{errors.password.message}</p>}
+            </div>
 
-        <p className="text-center text-sm text-slate-400 mt-6">
-          Hesabınız yoxdur?{' '}
-          <Link href="/register" className="text-primary-600 font-semibold hover:text-primary-700 transition-colors">
-            Qeydiyyat
-          </Link>
-        </p>
+            {requires2FA && (
+              <div className="form-group">
+                <label className="label">2FA Kodu</label>
+                <input {...register('totp_code')} type="text" className="input tracking-widest text-center" placeholder="— — — — — —" maxLength={6} />
+              </div>
+            )}
+
+            <div className="space-y-3 pt-1">
+              <button type="submit" disabled={loading} className="btn-primary w-full">
+                {loading ? <><Loader2 size={15} className="animate-spin" /> Giriş edilir...</> : 'Daxil ol'}
+              </button>
+              <Link href="/register" className="btn-secondary w-full text-center">
+                Qeydiyyat
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   )

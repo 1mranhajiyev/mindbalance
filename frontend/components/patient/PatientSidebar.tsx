@@ -28,7 +28,7 @@ export default function PatientSidebar({ onNavigate }: Props) {
   const handleLogout = () => {
     qc.clear()
     logout()
-    router.push('/login')
+    router.push('/')
   }
 
   const initials = user?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'P'
@@ -36,7 +36,7 @@ export default function PatientSidebar({ onNavigate }: Props) {
   return (
     <aside className="sidebar">
       <div className="px-2 py-1 border-b border-primary-100 pb-4 mb-1">
-        <div className="flex items-center gap-3">
+        <Link href="/patient/dashboard" onClick={onNavigate} className="flex items-center gap-3 rounded-lg hover:opacity-90 transition-opacity">
           <div className="logo-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26A7 7 0 0 0 12 2z"/>
@@ -47,7 +47,7 @@ export default function PatientSidebar({ onNavigate }: Props) {
             <p className="font-bold text-slate-900 text-sm tracking-tight">MindBalance</p>
             <p className="text-xs text-primary-600/70">Pasiyent paneli</p>
           </div>
-        </div>
+        </Link>
       </div>
       <SidebarNav items={navItems} onNavigate={onNavigate} />
       <div className="px-2 py-3 border-t border-primary-100 space-y-1 mt-auto">
