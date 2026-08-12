@@ -14,11 +14,12 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+user_role_enum = sa.Enum('patient', 'psychologist', name='user_role')
+
 
 def upgrade() -> None:
-    # DROP if exists first to avoid duplicate errors on re-run
-    op.execute("DROP TYPE IF EXISTS user_role CASCADE")
-    op.execute("CREATE TYPE user_role AS ENUM ('patient', 'psychologist')")
+    # Create enum only if it doesn't exist
+    user_role_enum.create(op.get_bind(), checkfirst=True)
 
     # --- users ---
     op.create_table(
@@ -184,4 +185,4 @@ def downgrade() -> None:
     op.drop_table('patient_profiles')
     op.drop_table('psychologist_profiles')
     op.drop_table('users')
-    op.execute('DROP TYPE IF EXISTS user_role')
+    user_role_enum.drop(op.get_bind(), checkfirst=True)
