@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
 
 export default function PsychologistNotes() {
   const qc = useQueryClient()
@@ -31,6 +32,7 @@ export default function PsychologistNotes() {
       </div>
       <div className="card">
         <h2 className="font-semibold text-gray-900 mb-4">Yeni qeyd</h2>
+        <ApiErrorAlert error={mutation.error} fallback="Qeyd saxlanıla bilmədi" />
         <div className="space-y-3">
           <select value={patientId} onChange={e => setPatientId(e.target.value)} className="select">
             <option value="">Pasiyent seçin</option>

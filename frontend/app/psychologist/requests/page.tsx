@@ -1,6 +1,7 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { UserCheck, UserX, Clock } from 'lucide-react'
 
 export default function RequestsPage() {
@@ -23,6 +24,8 @@ export default function RequestsPage() {
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Gələn müraciətlər</h1>
         <p className="text-sm text-slate-500 mt-1">Pasiyentlərin qoşulma müraciətlərini idarə edin.</p>
       </div>
+
+      <ApiErrorAlert error={respond.error} fallback="Müraciət cavablandırıla bilmədi" />
 
       {isLoading && <div className="text-slate-400 text-sm">Yüklənir...</div>}
 

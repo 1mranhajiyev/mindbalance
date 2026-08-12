@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { Smile, Cloud, AlertCircle, CloudRain, Zap, Battery } from 'lucide-react'
 import { CheckCircle2 } from 'lucide-react'
 
@@ -39,6 +40,7 @@ export default function CheckInCard() {
   return (
     <div className="card">
       <h2 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wide">Bugünkü vəziyyət</h2>
+      <ApiErrorAlert error={mutation.error} fallback="Check-in saxlanıla bilmədi" />
       <div className="grid grid-cols-3 gap-2 mb-5">
         {emotions.map(({ label, value, icon: Icon, color, activeBg }) => {
           const active = selected === value

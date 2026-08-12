@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
+import { getApiErrorMessage } from '@/lib/apiErrors'
 import { KeyRound, Mail, Loader2 } from 'lucide-react'
 
 const schema = z.object({
@@ -31,12 +33,12 @@ export default function LoginPage() {
     try {
       const res = await api.post('/auth/login', data)
       if (res.data.requires_2fa) { setRequires2FA(true); return }
-      setTokens(res.data.access_token, res.data.refresh_token)
+      setTokens(res.data.access, res.data.refresh)
       const me = await api.get('/auth/me')
       setUser(me.data)
       router.push(me.data.role === 'patient' ? '/patient/dashboard' : '/psychologist/dashboard')
     } catch (e: any) {
-      setError(e?.response?.data?.detail || 'Giriş mümkün olmadı')
+      setError(getApiErrorMessage(e, 'Giriş mümkün olmadı'))
     } finally {
       setLoading(false)
     }
@@ -57,7 +59,7 @@ export default function LoginPage() {
           <p className="text-sm text-slate-400 mt-1">Hesabınıza daxil olun</p>
         </div>
 
-        {error && <div className="alert-error">{error}</div>}
+        <ApiErrorAlert message={error} />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="form-group">

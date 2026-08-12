@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { format } from 'date-fns'
 import { az } from 'date-fns/locale'
 
@@ -26,6 +27,7 @@ export default function JournalPage() {
       <h1 className="text-2xl font-bold text-gray-900">📖 Gündəliyim</h1>
       <div className="card space-y-4">
         <h2 className="font-semibold text-gray-900">Yeni qeyd</h2>
+        <ApiErrorAlert error={mutation.error} fallback="Qeyd saxlanıla bilmədi" />
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="label">Hiss</label>

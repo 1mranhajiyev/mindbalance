@@ -6,6 +6,8 @@ import { z } from 'zod'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
+import { getApiErrorMessage } from '@/lib/apiErrors'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Ad ən az 2 simvol olmalıdır'),
@@ -34,7 +36,7 @@ export default function RegisterPage() {
       await api.post('/auth/register', data)
       router.push('/login?registered=1')
     } catch (e: any) {
-      setError(e?.response?.data?.detail || 'Qeydiyyat mümkün olmadı')
+      setError(getApiErrorMessage(e, 'Qeydiyyat mümkün olmadı'))
     } finally {
       setLoading(false)
     }
@@ -55,7 +57,7 @@ export default function RegisterPage() {
           <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>Yeni hesab yaratın</p>
         </div>
 
-        {error && <div className="alert-error">{error}</div>}
+        <ApiErrorAlert message={error} />
 
         <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
           <div className="form-group">

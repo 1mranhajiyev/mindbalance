@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { ChevronRight, ChevronLeft, Check, Brain, Search, UserCheck } from 'lucide-react'
 
 // ─── Tiplər ───────────────────────────────────────────────
@@ -91,6 +92,10 @@ export default function OnboardingPage() {
       </div>
 
       {/* Step progress */}
+      <ApiErrorAlert
+        error={saveAssessment.error || sendRequest.error}
+        fallback="Sorğu göndərilə bilmədi"
+      />
       <div className="flex items-center gap-2 mb-10">
         {steps.map((s, i) => {
           const Icon = s.icon
