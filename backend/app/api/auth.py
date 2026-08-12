@@ -39,10 +39,18 @@ class RefreshRequest(BaseModel):
 def register(body: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == body.email).first():
         raise HTTPException(400, "Email already registered")
+
+    # phone boş string gələrsə None et, unique constraint pozulmasın
+    phone = body.phone if body.phone and body.phone.strip() else None
+
+    # phone verilmisə duplicate yoxla
+    if phone and db.query(User).filter(User.phone == phone).first():
+        raise HTTPException(400, "Phone already registered")
+
     user = User(
         id=uuid.uuid4(),
         email=body.email,
-        phone=body.phone,
+        phone=phone,
         full_name=body.full_name,
         hashed_password=hash_password(body.password),
         role=body.role,
