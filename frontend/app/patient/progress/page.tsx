@@ -17,7 +17,7 @@ export default function ProgressPage() {
 
   const chartData = checkins.slice(0, 30).reverse().map((c: any) => ({
     date: format(new Date(c.created_at), 'd MMM'),
-    [c.emotion]: c.intensity
+    intensity: c.intensity ?? c.mood_score ?? 0,
   }))
 
   return (
@@ -33,9 +33,7 @@ export default function ProgressPage() {
             <YAxis domain={[0, 10]} tick={{ fontSize: 12 }} />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="Narahatlıq" stroke="#ef4444" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="Özünəinam" stroke="#8b5cf6" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="Stress" stroke="#f59e0b" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="intensity" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Şiddət" />
           </LineChart>
         </ResponsiveContainer>
       </div>

@@ -1,11 +1,32 @@
 'use client'
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
+import ApiErrorAlert from '@/components/ApiErrorAlert'
 
 export default function PsychologistTasks() {
-  const { data: tasks, isLoading } = useQuery({
+  const qc = useQueryClient()
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [patientId, setPatientId] = useState('')
+
+  const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['psych-tasks'],
     queryFn: () => api.get('/tasks').then(r => r.data)
+  })
+
+  const { data: patients = [] } = useQuery({
+    queryKey: ['patients'],
+    queryFn: () => api.get('/patients').then(r => r.data)
+  })
+
+  const mutation = useMutation({
+    mutationFn: (data: any) => api.post('/tasks', data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['psych-tasks'] })
+      setTitle('')
+      setDescription('')
+    }
   })
 
   return (
@@ -14,6 +35,27 @@ export default function PsychologistTasks() {
         <h1 className="text-2xl font-bold text-gray-900">Tapşırıqlar</h1>
         <p className="text-gray-500 mt-1">Pasiyentlərə verilmiş tapşırıqlar</p>
       </div>
+
+      <div className="card space-y-3">
+        <h2 className="font-semibold text-gray-900">Yeni tapşırıq</h2>
+        <ApiErrorAlert error={mutation.error} fallback="Tapşırıq yaradıla bilmədi" />
+        <select value={patientId} onChange={e => setPatientId(e.target.value)} className="select">
+          <option value="">Pasiyent seçin</option>
+          {patients.map((p: any) => (
+            <option key={p.id} value={p.id}>{p.full_name}</option>
+          ))}
+        </select>
+        <input value={title} onChange={e => setTitle(e.target.value)} className="input" placeholder="Tapşırıq başlığı" />
+        <textarea value={description} onChange={e => setDescription(e.target.value)} className="textarea" placeholder="Təsvir..." />
+        <button
+          onClick={() => mutation.mutate({ patient_id: patientId, title, description })}
+          disabled={!title || !patientId || mutation.isPending}
+          className="btn-primary"
+        >
+          {mutation.isPending ? 'Saxlanılır...' : 'Tapşırıq yarat'}
+        </button>
+      </div>
+
       <div className="card">
         {isLoading ? (
           <p className="text-gray-400 text-sm">Yüklənilir...</p>

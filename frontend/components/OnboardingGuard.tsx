@@ -15,16 +15,17 @@ export default function OnboardingGuard({ children }: { children: React.ReactNod
     queryFn: () => api.get('/onboarding/status').then(r => r.data),
     enabled: !!user && user.role === 'patient',
     staleTime: 30_000,
+    retry: 1,
   })
 
   useEffect(() => {
     if (!user || user.role !== 'patient') return
     if (isLoading) return
-    if (!status) return
 
     const isOnboardingPage = pathname === '/patient/onboarding'
+    const onboardingStatus = status?.onboarding_status ?? 'not_started'
 
-    if (status.onboarding_status !== 'completed' && !isOnboardingPage) {
+    if (onboardingStatus !== 'completed' && !isOnboardingPage) {
       router.replace('/patient/onboarding')
     }
   }, [status, isLoading, pathname, router, user])
@@ -32,7 +33,7 @@ export default function OnboardingGuard({ children }: { children: React.ReactNod
   if (user?.role === 'patient' && isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-slate-400 text-sm">Yüklənir...</div>
+        <div className="text-slate-400 text-sm">Yoxlanılır...</div>
       </div>
     )
   }
