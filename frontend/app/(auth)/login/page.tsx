@@ -9,7 +9,7 @@ import { useAuthStore } from '@/store/auth'
 import api from '@/lib/api'
 
 const schema = z.object({
-  email: z.string().email('Düžgün email daxil edin'),
+  email: z.string().email('Düzgün email daxil edin'),
   password: z.string().min(6, 'Parol ən az 6 simvol olmalıdır'),
   totp_code: z.string().optional(),
 })
@@ -45,43 +45,52 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-white px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-xl">🧠</span>
+    <div className="auth-bg">
+      <div className="auth-card">
+        {/* Logo */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+          <div className="logo-icon" style={{ marginBottom: '1rem' }}>🧠</div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', marginBottom: '0.25rem' }}>MindBalance</h1>
+          <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>Hesabınıza daxil olun</p>
+        </div>
+
+        {/* Error */}
+        {error && <div className="alert-error">{error}</div>}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="form-group">
+            <label className="label">Email</label>
+            <input {...register('email')} type="email" className="input" placeholder="email@example.com" />
+            {errors.email && <p className="form-error">{errors.email.message}</p>}
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">MindBalance</h1>
-          <p className="text-gray-500 text-sm mt-1">Hesabınıza daxil olun</p>
-        </div>
-        <div className="card">
-          {error && <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-sm mb-4">{error}</div>}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="label">Email</label>
-              <input {...register('email')} type="email" className="input" placeholder="email@example.com" />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+
+          <div className="form-group">
+            <label className="label">Parol</label>
+            <input {...register('password')} type="password" className="input" placeholder="••••••••" />
+            {errors.password && <p className="form-error">{errors.password.message}</p>}
+          </div>
+
+          {requires2FA && (
+            <div className="form-group">
+              <label className="label">2FA Kodu</label>
+              <input {...register('totp_code')} type="text" className="input" placeholder="123456" maxLength={6} />
             </div>
-            <div>
-              <label className="label">Parol</label>
-              <input {...register('password')} type="password" className="input" placeholder="••••••••" />
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-            </div>
-            {requires2FA && (
-              <div>
-                <label className="label">2FA Kodu</label>
-                <input {...register('totp_code')} type="text" className="input" placeholder="123456" maxLength={6} />
-              </div>
-            )}
-            <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? 'Giriş edilir...' : 'Daxil ol'}
-            </button>
-          </form>
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Hesabınız yoxdur?{' '}
-            <Link href="/register" className="text-primary-600 font-medium hover:underline">Qeydiyyat</Link>
-          </p>
-        </div>
+          )}
+
+          <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
+            {loading ? (
+              <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }}></span> Giriş edilir...</>
+            ) : 'Daxil ol'}
+          </button>
+        </form>
+
+        <p style={{ textAlign: 'center', fontSize: '0.875rem', color: '#6b7280', marginTop: '1.5rem' }}>
+          Hesabınız yoxdur?{' '}
+          <Link href="/register" style={{ color: '#7c3aed', fontWeight: 600, textDecoration: 'none' }}>
+            Qeydiyyat
+          </Link>
+        </p>
       </div>
     </div>
   )
