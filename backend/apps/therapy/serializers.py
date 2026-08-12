@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import TherapySession, Task, Goal, Milestone
-from .call_state import get_call_state
 
 
 class TherapySessionSerializer(serializers.ModelSerializer):
@@ -8,7 +7,6 @@ class TherapySessionSerializer(serializers.ModelSerializer):
     psychologist_name = serializers.CharField(source='psychologist.user.full_name', read_only=True)
     patient_id = serializers.UUIDField(write_only=True, required=False)
     psychologist_id = serializers.UUIDField(write_only=True, required=False)
-    call_state = serializers.SerializerMethodField()
 
     class Meta:
         model = TherapySession
@@ -20,9 +18,6 @@ class TherapySessionSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'patient', 'psychologist', 'patient_name', 'psychologist_name', 'call_state', 'created_at',
         ]
-
-    def get_call_state(self, obj):
-        return get_call_state(obj)
 
 
 class TaskSerializer(serializers.ModelSerializer):

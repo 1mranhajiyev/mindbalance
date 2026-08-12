@@ -19,7 +19,16 @@ export const sessionStatusStyles: Record<string, string> = {
 }
 
 export function resolveSessionCallState(session: { call_state?: string; status?: string }): string {
-  return session.call_state || session.status || 'scheduled'
+  if (session.call_state) return session.call_state
+  if (session.status === 'completed') return 'completed'
+  if (session.status === 'cancelled') return 'cancelled'
+  return session.status || 'scheduled'
+}
+
+export function canJoinSession(session: { call_state?: string; status?: string; format?: string }): boolean {
+  if (session.format !== 'online') return false
+  const state = resolveSessionCallState(session)
+  return ['scheduled', 'patient_waiting', 'psychologist_waiting', 'active'].includes(state)
 }
 
 export function getSessionStatusLabel(state: string): string {
@@ -40,7 +49,7 @@ export function getSessionStyle(session: { call_state?: string; status?: string 
 
 export function isUpcomingSession(session: { call_state?: string; status?: string }): boolean {
   const state = resolveSessionCallState(session)
-  return ['scheduled', 'patient_waiting', 'psychologist_waiting', 'active', 'in_progress'].includes(state)
+  return ['scheduled', 'patient_waiting', 'psychologist_waiting', 'active'].includes(state)
 }
 
 export function isPastSession(session: { call_state?: string; status?: string }): boolean {
@@ -48,6 +57,3 @@ export function isPastSession(session: { call_state?: string; status?: string })
   return state === 'completed' || state === 'cancelled'
 }
 
-export function canJoinSession(session: { call_state?: string; status?: string; format?: string }): boolean {
-  return session.format === 'online' && isUpcomingSession(session)
-}

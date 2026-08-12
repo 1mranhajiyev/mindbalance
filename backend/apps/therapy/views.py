@@ -8,6 +8,7 @@ import uuid
 from apps.users.assignments import get_assigned_patient_or_404, get_assigned_psychologists, is_assigned
 from .models import TherapySession, Task, Goal, SessionWebRTCSignal
 from .serializers import TherapySessionSerializer, TaskSerializer, GoalSerializer
+from .call_state import sync_call_state
 
 
 class TherapySessionViewSet(viewsets.ModelViewSet):
@@ -67,30 +68,30 @@ class TherapySessionViewSet(viewsets.ModelViewSet):
         if session.status == 'completed':
             return Response({'detail': 'Seans artıq bitib.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        update_fields = []
+        is_patient = request.user.role == 'patient'
+        already_in = session.patient_in_call if is_patient else session.psychologist_in_call
+        if already_in:
+            return Response(TherapySessionSerializer(session).data)
+
         if not session.webrtc_room_id:
             session.webrtc_room_id = str(uuid.uuid4())
-            update_fields.append('webrtc_room_id')
 
         was_empty = not session.patient_in_call and not session.psychologist_in_call
         if was_empty:
             session.webrtc_signals.all().delete()
 
-        if request.user.role == 'patient':
+        if is_patient:
             session.patient_in_call = True
-            update_fields.append('patient_in_call')
         else:
             session.psychologist_in_call = True
-            update_fields.append('psychologist_in_call')
 
         if session.patient_in_call and session.psychologist_in_call:
             session.call_had_both = True
-            update_fields.append('call_had_both')
             if not session.started_at:
                 session.started_at = timezone.now()
-                update_fields.append('started_at')
 
-        session.save(update_fields=list(dict.fromkeys(update_fields)))
+        sync_call_state(session)
+        session.save()
         session.refresh_from_db()
         return Response(TherapySessionSerializer(session).data)
 
@@ -99,13 +100,15 @@ class TherapySessionViewSet(viewsets.ModelViewSet):
         session = self.get_object()
         self._ensure_session_access(session)
 
-        update_fields = []
-        if request.user.role == 'patient':
+        is_patient = request.user.role == 'patient'
+        already_out = not (session.patient_in_call if is_patient else session.psychologist_in_call)
+        if already_out:
+            return Response(TherapySessionSerializer(session).data)
+
+        if is_patient:
             session.patient_in_call = False
-            update_fields.append('patient_in_call')
         else:
             session.psychologist_in_call = False
-            update_fields.append('psychologist_in_call')
 
         room_empty = not session.patient_in_call and not session.psychologist_in_call
 
@@ -114,16 +117,14 @@ class TherapySessionViewSet(viewsets.ModelViewSet):
             if session.call_had_both:
                 session.status = 'completed'
                 session.ended_at = timezone.now()
-                update_fields.extend(['status', 'ended_at'])
             elif session.status != 'completed':
                 session.status = 'scheduled'
                 session.started_at = None
                 session.ended_at = None
-                update_fields.extend(['status', 'started_at', 'ended_at'])
             session.call_had_both = False
-            update_fields.append('call_had_both')
 
-        session.save(update_fields=list(dict.fromkeys(update_fields)))
+        sync_call_state(session)
+        session.save()
         session.refresh_from_db()
         return Response(TherapySessionSerializer(session).data)
 

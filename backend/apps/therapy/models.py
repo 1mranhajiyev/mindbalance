@@ -14,6 +14,13 @@ class TherapySession(models.Model):
         ('online', 'Online'),
         ('in_person', 'Üz-üzə'),
     ]
+    CALL_STATE_CHOICES = [
+        ('scheduled', 'Planlaşdırılıb'),
+        ('patient_waiting', 'Pasiyent gözləyir'),
+        ('psychologist_waiting', 'Psixoloq gözləyir'),
+        ('active', 'Canlı'),
+        ('completed', 'Bitdi'),
+    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='sessions')
@@ -30,6 +37,7 @@ class TherapySession(models.Model):
     patient_in_call = models.BooleanField(default=False)
     psychologist_in_call = models.BooleanField(default=False)
     call_had_both = models.BooleanField(default=False)
+    call_state = models.CharField(max_length=30, choices=CALL_STATE_CHOICES, default='scheduled')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

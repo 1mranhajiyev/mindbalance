@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { Mic, MicOff, Video, VideoOff, PhoneOff, Loader2 } from 'lucide-react'
 import api from '@/lib/api'
+import { useAuthStore } from '@/store/auth'
 
 type Role = 'patient' | 'psychologist'
 
@@ -24,6 +25,7 @@ export default function VideoCallRoom({ sessionId, role, remoteLabel, exitPath }
   const lastSignalTs = useRef(0)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const joinedRef = useRef(false)
+  const endingRef = useRef(false)
 
   const [isMicOn, setIsMicOn] = useState(true)
   const [isCamOn, setIsCamOn] = useState(true)
@@ -60,6 +62,8 @@ export default function VideoCallRoom({ sessionId, role, remoteLabel, exitPath }
   }, [])
 
   const endCall = useCallback(async () => {
+    if (endingRef.current) return
+    endingRef.current = true
     cleanupMedia()
     await leaveSession()
     router.push(exitPath)
@@ -71,10 +75,7 @@ export default function VideoCallRoom({ sessionId, role, remoteLabel, exitPath }
     async function startCall() {
       try {
         await api.post(`/sessions/${sessionId}/join`, {})
-        if (cancelled) {
-          await api.post(`/sessions/${sessionId}/leave`, {}).catch(() => {})
-          return
-        }
+        if (cancelled) return
 
         joinedRef.current = true
         invalidateSessions()
@@ -82,7 +83,6 @@ export default function VideoCallRoom({ sessionId, role, remoteLabel, exitPath }
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         if (cancelled) {
           stream.getTracks().forEach(t => t.stop())
-          await leaveSession()
           return
         }
 
@@ -132,7 +132,6 @@ export default function VideoCallRoom({ sessionId, role, remoteLabel, exitPath }
           setConnectionStatus('error')
           setErrorMsg('Kamera/mikrofon icazəsi və ya seans bağlantısı alınmadı.')
         }
-        if (joinedRef.current) await leaveSession()
       }
     }
 
@@ -140,12 +139,11 @@ export default function VideoCallRoom({ sessionId, role, remoteLabel, exitPath }
     const timer = setInterval(() => setElapsed(e => e + 1), 1000)
 
     const onPageHide = () => {
-      if (!joinedRef.current) return
+      if (!joinedRef.current || endingRef.current) return
+      endingRef.current = true
       joinedRef.current = false
       const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
-      const token = typeof window !== 'undefined'
-        ? JSON.parse(localStorage.getItem('mindbalance-auth') || '{}')?.state?.accessToken
-        : null
+      const token = useAuthStore.getState().accessToken
       if (token) {
         fetch(`${baseURL}/sessions/${sessionId}/leave/`, {
           method: 'POST',
@@ -161,9 +159,9 @@ export default function VideoCallRoom({ sessionId, role, remoteLabel, exitPath }
       clearInterval(timer)
       window.removeEventListener('pagehide', onPageHide)
       cleanupMedia()
-      leaveSession()
+      // Strict Mode cleanup leave etmir — yalnız endCall/pagehide
     }
-  }, [sessionId, role, cleanupMedia, leaveSession, invalidateSessions])
+  }, [sessionId, role, cleanupMedia, invalidateSessions])
 
   const toggleMic = () => {
     localStreamRef.current?.getAudioTracks().forEach(t => { t.enabled = !t.enabled })
