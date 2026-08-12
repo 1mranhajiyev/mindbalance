@@ -1,18 +1,14 @@
 import uuid
+import enum
 from sqlalchemy import Column, String, Boolean, DateTime
-from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.core.database import Base
-import enum
 
 
 class UserRole(str, enum.Enum):
     patient = "patient"
     psychologist = "psychologist"
-
-
-# create_type=False: Alembic migration manages this type, not SQLAlchemy
-user_role_type = ENUM('patient', 'psychologist', name='user_role', create_type=False)
 
 
 class User(Base):
@@ -23,7 +19,9 @@ class User(Base):
     phone = Column(String, unique=True, nullable=True)
     full_name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(user_role_type, nullable=False)
+    # Plain String — SQLAlchemy will NOT auto-create any PostgreSQL type.
+    # The actual user_role ENUM type is created exclusively by Alembic migration.
+    role = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     totp_secret = Column(String, nullable=True)

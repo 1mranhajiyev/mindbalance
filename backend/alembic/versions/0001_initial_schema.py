@@ -17,14 +17,15 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Create enum type idempotently via raw SQL — SQLAlchemy will NOT touch it
+    # Step 1: create enum type idempotently via raw SQL only
     op.execute("""
         DO $$ BEGIN
             CREATE TYPE user_role AS ENUM ('patient', 'psychologist');
         EXCEPTION WHEN duplicate_object THEN null;
-        END $$
+        END $$;
     """)
 
+    # Step 2: create users table with TEXT for role (avoids SQLAlchemy ENUM auto-create)
     op.create_table(
         'users',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
@@ -32,16 +33,15 @@ def upgrade() -> None:
         sa.Column('phone', sa.String(), nullable=True, unique=True),
         sa.Column('full_name', sa.String(), nullable=False),
         sa.Column('hashed_password', sa.String(), nullable=False),
-        # Use TEXT with explicit cast — avoids SQLAlchemy auto-creating the type
-        sa.Column('role', sa.Text(), nullable=False),
+        sa.Column('role', sa.String(), nullable=False),
         sa.Column('is_active', sa.Boolean(), server_default=sa.true()),
         sa.Column('is_verified', sa.Boolean(), server_default=sa.false()),
         sa.Column('totp_secret', sa.String(), nullable=True),
         sa.Column('totp_enabled', sa.Boolean(), server_default=sa.false()),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now()),
-        sa.Column('updated_at', sa.DateTime(timezone=True), onupdate=sa.func.now(), nullable=True),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     )
-    # Apply the enum type to the column after table creation
+    # Step 3: cast role column to the real user_role enum type
     op.execute("ALTER TABLE users ALTER COLUMN role TYPE user_role USING role::user_role")
     op.create_index('ix_users_email', 'users', ['email'], unique=True)
 
