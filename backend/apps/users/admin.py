@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, PsychologistProfile, PatientProfile
+from .models import User, PsychologistProfile, PatientProfile, PatientPsychologistAssignment
 
 
 @admin.register(User)
@@ -33,6 +33,13 @@ class PsychologistProfileAdmin(admin.ModelAdmin):
 
 @admin.register(PatientProfile)
 class PatientProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'psychologist', 'onboarding_status', 'therapy_start_date']
+    list_display = ['user', 'onboarding_status', 'therapy_start_date']
     search_fields = ['user__full_name']
     list_filter = ['onboarding_status']
+
+
+@admin.register(PatientPsychologistAssignment)
+class PatientPsychologistAssignmentAdmin(admin.ModelAdmin):
+    list_display = ['patient', 'psychologist', 'is_active', 'assigned_at']
+    list_filter = ['is_active']
+    search_fields = ['patient__user__full_name', 'psychologist__user__full_name']

@@ -24,13 +24,11 @@ class NoteViewSet(viewsets.ModelViewSet):
         content = self.request.data.get('content', '')
         title = self.request.data.get('title') or (content[:50] if content else 'Qeyd')
         if user.role == 'psychologist':
-            from apps.users.models import PatientProfile
+            from apps.users.assignments import get_assigned_patient_or_404
             patient_id = self.request.data.get('patient_id')
             patient = None
             if patient_id:
-                patient = PatientProfile.objects.get(
-                    id=patient_id, psychologist=user.psychologist_profile
-                )
+                patient = get_assigned_patient_or_404(patient_id, user.psychologist_profile)
             serializer.save(
                 psychologist=user.psychologist_profile,
                 patient=patient,

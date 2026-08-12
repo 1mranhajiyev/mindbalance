@@ -61,7 +61,7 @@ class PsychologistProfile(models.Model):
     bio = models.TextField(null=True, blank=True)
     session_price = models.IntegerField(null=True, blank=True)
     experience_years = models.IntegerField(null=True, blank=True)
-    languages = models.CharField(max_length=50, null=True, blank=True)  # "az,en,ru"
+    languages = models.CharField(max_length=50, null=True, blank=True)
     is_accepting_patients = models.BooleanField(default=True)
 
     class Meta:
@@ -76,10 +76,6 @@ class PsychologistProfile(models.Model):
 class PatientProfile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='patient_profile')
-    psychologist = models.ForeignKey(
-        PsychologistProfile, on_delete=models.SET_NULL,
-        null=True, blank=True, related_name='patients'
-    )
     age = models.IntegerField(null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     therapy_start_date = models.DateField(null=True, blank=True)
@@ -101,3 +97,31 @@ class PatientProfile(models.Model):
 
     def __str__(self):
         return f'{self.user.full_name} - Pasiyent'
+
+    @property
+    def assigned_psychologists(self):
+        return PsychologistProfile.objects.filter(
+            patient_assignments__patient=self,
+            patient_assignments__is_active=True,
+        )
+
+
+class PatientPsychologistAssignment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    patient = models.ForeignKey(
+        PatientProfile, on_delete=models.CASCADE, related_name='psychologist_assignments'
+    )
+    psychologist = models.ForeignKey(
+        PsychologistProfile, on_delete=models.CASCADE, related_name='patient_assignments'
+    )
+    assigned_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'patient_psychologist_assignments'
+        unique_together = [['patient', 'psychologist']]
+        verbose_name = 'Pasiyent-Psixoloq əlaqəsi'
+        verbose_name_plural = 'Pasiyent-Psixoloq əlaqələri'
+
+    def __str__(self):
+        return f'{self.patient.user.full_name} ↔ {self.psychologist.user.full_name}'

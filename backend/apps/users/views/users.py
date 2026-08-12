@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.therapy.models import TherapySession, Task
 from apps.users.models import PsychologistProfile, PatientProfile
+from apps.users.assignments import get_assigned_patients
 from apps.users.serializers import PsychologistProfileSerializer, PatientProfileSerializer
 
 
@@ -25,9 +26,7 @@ class PatientViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role == 'psychologist':
-            return PatientProfile.objects.filter(
-                psychologist__user=user
-            ).select_related('user', 'psychologist')
+            return get_assigned_patients(user.psychologist_profile)
         return PatientProfile.objects.filter(user=user)
 
     def list(self, request, *args, **kwargs):
@@ -46,6 +45,8 @@ class PatientViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         patient = self.get_object()
+        from apps.users.assignments import get_assigned_psychologists
+        psychologists = get_assigned_psychologists(patient)
         return Response({
             'id': str(patient.id),
             'full_name': patient.user.full_name,
@@ -53,7 +54,10 @@ class PatientViewSet(viewsets.ReadOnlyModelViewSet):
             'phone': patient.user.phone,
             'therapy_start_date': patient.therapy_start_date,
             'onboarding_status': patient.onboarding_status,
-            'psychologist_id': str(patient.psychologist_id) if patient.psychologist_id else None,
+            'psychologists': [
+                {'id': str(p.id), 'full_name': p.user.full_name}
+                for p in psychologists
+            ],
         })
 
 
@@ -64,10 +68,11 @@ class PsychologistDashboardView(APIView):
         if request.user.role != 'psychologist':
             return Response({'detail': 'Yalnız psixoloqlar üçün.'}, status=403)
         profile = request.user.psychologist_profile
-        active_patients = PatientProfile.objects.filter(psychologist=profile).count()
+        assigned = get_assigned_patients(profile)
+        active_patients = assigned.count()
         total_sessions = TherapySession.objects.filter(psychologist=profile).count()
         pending_tasks = Task.objects.filter(
-            patient__psychologist=profile, is_completed=False
+            patient__in=assigned, is_completed=False
         ).count()
         return Response({
             'active_patients': active_patients,
@@ -88,7 +93,7 @@ class PsychologistStatisticsView(APIView):
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         sessions = TherapySession.objects.filter(psychologist=profile)
         completed = sessions.filter(status='completed').count()
-        active_patients = PatientProfile.objects.filter(psychologist=profile).count()
+        active_patients = get_assigned_patients(profile).count()
         monthly_revenue = sessions.filter(
             is_paid=True, scheduled_at__gte=month_start
         ).aggregate(total=Sum('price'))['total'] or 0

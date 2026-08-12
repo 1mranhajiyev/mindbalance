@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta, date
 from apps.users.models import User, UserRole, PsychologistProfile, PatientProfile
+from apps.users.assignments import assign_patient_to_psychologist
 from apps.onboarding.models import OnboardingAssessment, PatientConnectionRequest
 from apps.therapy.models import TherapySession, Task, Goal
 from apps.content.models import Note, CheckIn
@@ -47,7 +48,7 @@ class Command(BaseCommand):
         psych2.set_password('SecurePass1!')
         psych2.save()
 
-        PsychologistProfile.objects.get_or_create(
+        psych2_profile, _ = PsychologistProfile.objects.get_or_create(
             user=psych2,
             defaults={
                 'specialization': 'Schema Therapy',
@@ -73,15 +74,14 @@ class Command(BaseCommand):
         patient1_profile, _ = PatientProfile.objects.get_or_create(
             user=patient1,
             defaults={
-                'psychologist': psych1_profile,
                 'onboarding_status': 'completed',
                 'therapy_start_date': date.today() - timedelta(days=30),
             },
         )
-        patient1_profile.psychologist = psych1_profile
         patient1_profile.onboarding_status = 'completed'
         patient1_profile.therapy_start_date = date.today() - timedelta(days=30)
         patient1_profile.save()
+        assign_patient_to_psychologist(patient1_profile, psych1_profile)
 
         patient2, created = User.objects.get_or_create(
             email='kamran.pasient@mindbalance.az',

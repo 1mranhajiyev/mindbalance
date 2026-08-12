@@ -3,10 +3,11 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useQueryClient } from '@tanstack/react-query'
-import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut } from 'lucide-react'
+import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut, Users } from 'lucide-react'
 
 const navItems = [
   { href: '/patient/dashboard', label: 'Ana Səhifə', icon: Home },
+  { href: '/patient/psychologists', label: 'Psixoloqlarım', icon: Users },
   { href: '/patient/journal', label: 'Gündəliyim', icon: BookOpen },
   { href: '/patient/sessions', label: 'Seanslar', icon: Calendar },
   { href: '/patient/progress', label: 'İnkişaf', icon: TrendingUp },

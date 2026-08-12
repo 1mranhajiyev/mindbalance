@@ -25,7 +25,7 @@ export default function OnboardingGuard({ children }: { children: React.ReactNod
     const isOnboardingPage = pathname === '/patient/onboarding'
     const onboardingStatus = status?.onboarding_status ?? 'not_started'
 
-    if (onboardingStatus !== 'completed' && !isOnboardingPage) {
+    if (onboardingStatus === 'not_started' && !isOnboardingPage) {
       router.replace('/patient/onboarding')
     }
   }, [status, isLoading, pathname, router, user])

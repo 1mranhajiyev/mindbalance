@@ -56,7 +56,10 @@ export default function OnboardingPage() {
 
   const sendRequest = useMutation({
     mutationFn: (data: any) => api.post('/onboarding/request', data),
-    onSuccess: () => setStep('waiting'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['my-requests'] })
+      router.push('/patient/psychologists')
+    },
   })
 
   // ─── Handlers ─────────────────────────────────────────
@@ -271,7 +274,13 @@ export default function OnboardingPage() {
           <p className="text-sm text-slate-500 max-w-xs mx-auto">
             Psixoloq müraciətinizi nəzərdən keçirəcək. Qəbul edildikdən sonra dashboardunuz tam aktiv olacaq.
           </p>
-          <p className="text-xs text-slate-400 mt-4">Bu səhifəni bağlaya bilərsiniz.</p>
+          <button
+            onClick={() => router.push('/patient/psychologists')}
+            className="btn-primary mt-6"
+          >
+            Müraciətlərimə bax
+          </button>
+          <p className="text-xs text-slate-400 mt-4">Dashboard-a keçə bilərsiniz — müraciət statusunu Psixoloqlarım bölməsində izləyin.</p>
         </div>
       )}
     </div>
