@@ -8,10 +8,10 @@ import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 
 const schema = z.object({
-  full_name: z.string().min(2, 'Ad ən az 2 simvol'),
-  email: z.string().email('Düžgün email'),
+  full_name: z.string().min(2, 'Ad ən az 2 simvol olmalıdır'),
+  email: z.string().email('Düzgün email daxil edin'),
   phone: z.string().optional(),
-  password: z.string().min(6, 'Parol ən az 6 simvol'),
+  password: z.string().min(6, 'Parol ən az 6 simvol olmalıdır'),
   role: z.enum(['patient', 'psychologist']),
 })
 type FormData = z.infer<typeof schema>
@@ -20,8 +20,9 @@ export default function RegisterPage() {
   const router = useRouter()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [selectedRole, setSelectedRole] = useState<'patient' | 'psychologist'>('patient')
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { role: 'patient' }
   })
@@ -39,60 +40,97 @@ export default function RegisterPage() {
     }
   }
 
+  const handleRoleSelect = (role: 'patient' | 'psychologist') => {
+    setSelectedRole(role)
+    setValue('role', role)
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-white px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-xl">🧠</span>
+    <div className="auth-bg">
+      <div className="auth-card" style={{ maxWidth: 460 }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+          <div className="logo-icon" style={{ marginBottom: '1rem' }}>🧠</div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', marginBottom: '0.25rem' }}>Qeydiyyat</h1>
+          <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>Yeni hesab yaratın</p>
+        </div>
+
+        {error && <div className="alert-error">{error}</div>}
+
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
+          <div className="form-group">
+            <label className="label">Ad Soyad</label>
+            <input {...register('full_name')} className="input" placeholder="Ayşel Məmmədova" />
+            {errors.full_name && <p className="form-error">{errors.full_name.message}</p>}
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Qeydiyyat</h1>
-          <p className="text-gray-500 text-sm mt-1">Yeni hesab yaradın</p>
-        </div>
-        <div className="card">
-          {error && <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-sm mb-4">{error}</div>}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="label">Ad Soyad</label>
-              <input {...register('full_name')} className="input" placeholder="Aysel Məmmədova" />
-              {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name.message}</p>}
+
+          <div className="form-group">
+            <label className="label">Email</label>
+            <input {...register('email')} type="email" className="input" placeholder="email@example.com" />
+            {errors.email && <p className="form-error">{errors.email.message}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="label">Telefon <span style={{ color: '#9ca3af', fontWeight: 400 }}>(istəyə bağlı)</span></label>
+            <input {...register('phone')} className="input" placeholder="+994 50 123 45 67" />
+          </div>
+
+          <div className="form-group">
+            <label className="label">Parol</label>
+            <input {...register('password')} type="password" className="input" placeholder="••••••••" />
+            {errors.password && <p className="form-error">{errors.password.message}</p>}
+          </div>
+
+          {/* Role selector */}
+          <div className="form-group">
+            <label className="label">Rol seçin</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              {(['patient', 'psychologist'] as const).map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => handleRoleSelect(role)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    padding: '1rem',
+                    borderRadius: '0.75rem',
+                    border: selectedRole === role ? '2px solid #7c3aed' : '1.5px solid #e5e7eb',
+                    background: selectedRole === role ? '#f5f3ff' : '#ffffff',
+                    cursor: 'pointer',
+                    transition: 'all 180ms ease',
+                    color: selectedRole === role ? '#7c3aed' : '#374151',
+                    fontWeight: selectedRole === role ? 600 : 500,
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  <span style={{ fontSize: '1.5rem' }}>{role === 'patient' ? '👤' : '👨‍⚕️'}</span>
+                  {role === 'patient' ? 'Pasiyent' : 'Psixoloq'}
+                </button>
+              ))}
             </div>
-            <div>
-              <label className="label">Email</label>
-              <input {...register('email')} type="email" className="input" placeholder="email@example.com" />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-            </div>
-            <div>
-              <label className="label">Telefon (istəyə bağlı)</label>
-              <input {...register('phone')} className="input" placeholder="+994 50 123 45 67" />
-            </div>
-            <div>
-              <label className="label">Parol</label>
-              <input {...register('password')} type="password" className="input" placeholder="••••••••" />
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-            </div>
-            <div>
-              <label className="label">Rol</label>
-              <div className="grid grid-cols-2 gap-3">
-                <label className="flex items-center gap-2 border border-gray-200 rounded-xl p-3 cursor-pointer hover:border-primary-400">
-                  <input {...register('role')} type="radio" value="patient" className="text-primary-600" />
-                  <span className="text-sm font-medium">Pasiyent</span>
-                </label>
-                <label className="flex items-center gap-2 border border-gray-200 rounded-xl p-3 cursor-pointer hover:border-primary-400">
-                  <input {...register('role')} type="radio" value="psychologist" className="text-primary-600" />
-                  <span className="text-sm font-medium">Psixoloq</span>
-                </label>
-              </div>
-            </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? 'Qeydiyyat...' : 'Qeydiyyatdan keç'}
-            </button>
-          </form>
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Artıq hesabınız var?{' '}
-            <Link href="/login" className="text-primary-600 font-medium hover:underline">Daxil olun</Link>
-          </p>
-        </div>
+            <input type="hidden" {...register('role')} value={selectedRole} />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary"
+            style={{ width: '100%', marginTop: '0.5rem' }}
+          >
+            {loading ? (
+              <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }}></span> Qeydiyyat...</>
+            ) : 'Qeydiyyatdan keç'}
+          </button>
+        </form>
+
+        <p style={{ textAlign: 'center', fontSize: '0.875rem', color: '#6b7280', marginTop: '1.5rem' }}>
+          Artıq hesabınız var?{' '}
+          <Link href="/login" style={{ color: '#7c3aed', fontWeight: 600, textDecoration: 'none' }}>Daxil olun</Link>
+        </p>
       </div>
     </div>
   )
