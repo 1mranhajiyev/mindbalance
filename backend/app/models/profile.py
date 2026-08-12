@@ -1,7 +1,8 @@
 import uuid
-from sqlalchemy import Column, String, Integer, Text, Date, ForeignKey, DateTime
+from sqlalchemy import Column, String, Integer, Text, Date, ForeignKey, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.core.database import Base
 
 
@@ -14,6 +15,9 @@ class PsychologistProfile(Base):
     specialization = Column(String, nullable=True)
     bio = Column(Text, nullable=True)
     session_price = Column(Integer, nullable=True)
+    experience_years = Column(Integer, nullable=True)
+    languages = Column(String, nullable=True)  # "az,en,ru"
+    is_accepting_patients = Column(Boolean, default=True)
 
     user = relationship("User", foreign_keys=[user_id])
 
@@ -27,8 +31,8 @@ class PatientProfile(Base):
     age = Column(Integer, nullable=True)
     birth_date = Column(Date, nullable=True)
     therapy_start_date = Column(Date, nullable=True)
-    initial_reason = Column(Text, nullable=True)
-    initial_expectations = Column(Text, nullable=True)
+    # Onboarding vəziyyəti: not_started | assessment_done | psychologist_selected | completed
+    onboarding_status = Column(String, default="not_started", nullable=False)
 
     user = relationship("User", foreign_keys=[user_id])
     psychologist = relationship("PsychologistProfile", foreign_keys=[psychologist_id])

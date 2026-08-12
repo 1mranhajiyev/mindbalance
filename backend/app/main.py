@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api import auth, patients, psychologists, sessions, checkins, goals, tasks, notes
+from app.api import onboarding
 
 app = FastAPI(
     title="MindBalance API",
@@ -11,7 +12,6 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -20,7 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers
 app.include_router(auth.router,           prefix="/api/v1/auth",          tags=["auth"])
 app.include_router(patients.router,       prefix="/api/v1/patients",      tags=["patients"])
 app.include_router(psychologists.router,  prefix="/api/v1/psychologists", tags=["psychologists"])
@@ -29,6 +28,7 @@ app.include_router(checkins.router,       prefix="/api/v1/checkins",      tags=[
 app.include_router(goals.router,          prefix="/api/v1/goals",         tags=["goals"])
 app.include_router(tasks.router,          prefix="/api/v1/tasks",         tags=["tasks"])
 app.include_router(notes.router,          prefix="/api/v1/notes",         tags=["notes"])
+app.include_router(onboarding.router,     prefix="/api/v1/onboarding",    tags=["onboarding"])
 
 
 @app.get("/health")

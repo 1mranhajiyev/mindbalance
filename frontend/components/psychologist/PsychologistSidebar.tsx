@@ -3,16 +3,17 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useQueryClient } from '@tanstack/react-query'
-import { LayoutDashboard, Users, Calendar, ClipboardList, BookOpen, BarChart2, CreditCard, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, Calendar, ClipboardList, BookOpen, BarChart2, CreditCard, LogOut, Inbox } from 'lucide-react'
 
 const navItems = [
-  { href: '/psychologist/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/psychologist/patients', label: 'Pasiyentlər', icon: Users },
-  { href: '/psychologist/sessions', label: 'Seanslar', icon: Calendar },
-  { href: '/psychologist/tasks', label: 'Tapşırıqlar', icon: ClipboardList },
-  { href: '/psychologist/notes', label: 'Qeydlər', icon: BookOpen },
-  { href: '/psychologist/statistics', label: 'Statistika', icon: BarChart2 },
-  { href: '/psychologist/payments', label: 'Ödənişlər', icon: CreditCard },
+  { href: '/psychologist/dashboard',  label: 'Dashboard',      icon: LayoutDashboard },
+  { href: '/psychologist/requests',   label: 'Müraciətlər',    icon: Inbox },
+  { href: '/psychologist/patients',   label: 'Pasiyentlər',    icon: Users },
+  { href: '/psychologist/sessions',   label: 'Seanslar',       icon: Calendar },
+  { href: '/psychologist/tasks',      label: 'Tapşırıqlar',    icon: ClipboardList },
+  { href: '/psychologist/notes',      label: 'Qeydlər',        icon: BookOpen },
+  { href: '/psychologist/statistics', label: 'Statistika',     icon: BarChart2 },
+  { href: '/psychologist/payments',   label: 'Ödənişlər',      icon: CreditCard },
 ]
 
 export default function PsychologistSidebar() {
