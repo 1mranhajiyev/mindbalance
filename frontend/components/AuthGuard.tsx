@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useQueryClient } from '@tanstack/react-query'
+import { useAuthHydrated } from '@/hooks/useAuthHydrated'
 import api from '@/lib/api'
 
 interface Props {
@@ -12,11 +13,14 @@ interface Props {
 
 export default function AuthGuard({ children, requiredRole }: Props) {
   const router = useRouter()
+  const hydrated = useAuthHydrated()
   const { user, accessToken, setUser, logout } = useAuthStore()
   const qc = useQueryClient()
   const [isValidating, setIsValidating] = useState(true)
 
   useEffect(() => {
+    if (!hydrated) return
+
     let cancelled = false
 
     async function validateSession() {
@@ -54,9 +58,9 @@ export default function AuthGuard({ children, requiredRole }: Props) {
     return () => {
       cancelled = true
     }
-  }, [accessToken, requiredRole, router, qc, logout, setUser])
+  }, [hydrated, accessToken, requiredRole, router, qc, logout, setUser])
 
-  if (isValidating || !accessToken || !user) {
+  if (!hydrated || isValidating || !accessToken || !user) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-slate-400 text-sm">Yoxlanılır...</div>

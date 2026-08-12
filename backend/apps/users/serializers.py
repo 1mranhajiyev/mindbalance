@@ -38,7 +38,39 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'full_name', 'role', 'phone', 'is_verified',
                   'totp_enabled', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'is_verified']
+        read_only_fields = ['id', 'email', 'role', 'created_at', 'updated_at', 'is_verified']
+
+
+class PatientProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PatientProfile
+        fields = ['age', 'birth_date']
+
+
+class PatientProfileReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PatientProfile
+        fields = ['id', 'age', 'birth_date', 'therapy_start_date', 'onboarding_status']
+        read_only_fields = ['id', 'therapy_start_date', 'onboarding_status']
+
+
+class PsychologistProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PsychologistProfile
+        fields = [
+            'license_number', 'specialization', 'bio', 'session_price',
+            'experience_years', 'languages', 'is_accepting_patients',
+        ]
+
+
+class PsychologistProfileReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PsychologistProfile
+        fields = [
+            'id', 'license_number', 'specialization', 'bio', 'session_price',
+            'experience_years', 'languages', 'is_accepting_patients',
+        ]
+        read_only_fields = ['id']
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

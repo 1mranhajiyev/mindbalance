@@ -6,6 +6,7 @@ interface User {
   full_name: string
   email: string
   role: 'patient' | 'psychologist'
+  phone?: string | null
   totp_enabled: boolean
 }
 

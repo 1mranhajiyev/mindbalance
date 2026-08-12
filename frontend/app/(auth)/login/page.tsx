@@ -6,6 +6,7 @@ import { z } from 'zod'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
+import { useAuthHydrated } from '@/hooks/useAuthHydrated'
 import api from '@/lib/api'
 import ApiErrorAlert from '@/components/ApiErrorAlert'
 import { getApiErrorMessage } from '@/lib/apiErrors'
@@ -20,6 +21,7 @@ type FormData = z.infer<typeof schema>
 
 export default function LoginPage() {
   const router = useRouter()
+  const hydrated = useAuthHydrated()
   const { user, accessToken, setUser, setTokens } = useAuthStore()
   const [requires2FA, setRequires2FA] = useState(false)
   const [error, setError] = useState('')
@@ -28,10 +30,9 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) })
 
   useEffect(() => {
-    if (accessToken && user) {
-      router.replace(user.role === 'patient' ? '/patient/dashboard' : '/psychologist/dashboard')
-    }
-  }, [accessToken, user, router])
+    if (!hydrated || !accessToken || !user) return
+    router.replace(user.role === 'patient' ? '/patient/dashboard' : '/psychologist/dashboard')
+  }, [hydrated, accessToken, user, router])
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)

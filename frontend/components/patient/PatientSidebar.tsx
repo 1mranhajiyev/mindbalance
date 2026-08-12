@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useQueryClient } from '@tanstack/react-query'
-import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut, Users } from 'lucide-react'
+import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut, Users, UserCircle } from 'lucide-react'
 
 const navItems = [
   { href: '/patient/dashboard', label: 'Ana Səhifə', icon: Home },
@@ -12,6 +12,7 @@ const navItems = [
   { href: '/patient/sessions', label: 'Seanslar', icon: Calendar },
   { href: '/patient/progress', label: 'İnkişaf', icon: TrendingUp },
   { href: '/patient/tasks', label: 'Tapşırıqlar', icon: CheckSquare },
+  { href: '/patient/profile', label: 'Profil', icon: UserCircle },
 ]
 
 export default function PatientSidebar() {
@@ -58,13 +59,13 @@ export default function PatientSidebar() {
         })}
       </nav>
       <div className="px-3 py-4 border-t border-slate-100 space-y-1">
-        <div className="flex items-center gap-3 px-3 py-2">
+        <Link href="/patient/profile" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all">
           <div className="avatar avatar-sm">{initials}</div>
           <div className="min-w-0">
             <p className="text-xs font-semibold text-slate-900 truncate">{user?.full_name}</p>
             <p className="text-xs text-slate-400 truncate">{user?.email}</p>
           </div>
-        </div>
+        </Link>
         <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 w-full transition-all">
           <LogOut size={16} />
           Çıxış
