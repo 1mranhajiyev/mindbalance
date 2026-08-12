@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import api from '@/lib/api'
+import { KeyRound, Mail, Loader2 } from 'lucide-react'
 
 const schema = z.object({
   email: z.string().email('Düzgün email daxil edin'),
@@ -29,10 +30,7 @@ export default function LoginPage() {
     setError('')
     try {
       const res = await api.post('/auth/login', data)
-      if (res.data.requires_2fa) {
-        setRequires2FA(true)
-        return
-      }
+      if (res.data.requires_2fa) { setRequires2FA(true); return }
       setTokens(res.data.access_token, res.data.refresh_token)
       const me = await api.get('/auth/me')
       setUser(me.data)
@@ -48,46 +46,53 @@ export default function LoginPage() {
     <div className="auth-bg">
       <div className="auth-card">
         {/* Logo */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
-          <div className="logo-icon" style={{ marginBottom: '1rem' }}>🧠</div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', marginBottom: '0.25rem' }}>MindBalance</h1>
-          <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>Hesabınıza daxil olun</p>
+        <div className="flex flex-col items-center mb-8">
+          <div className="logo-icon mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26A7 7 0 0 0 12 2z"/>
+              <line x1="9" y1="21" x2="15" y2="21"/>
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">MindBalance</h1>
+          <p className="text-sm text-slate-400 mt-1">Hesabınıza daxil olun</p>
         </div>
 
-        {/* Error */}
         {error && <div className="alert-error">{error}</div>}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="form-group">
             <label className="label">Email</label>
-            <input {...register('email')} type="email" className="input" placeholder="email@example.com" />
+            <div className="relative">
+              <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input {...register('email')} type="email" className="input pl-9" placeholder="email@example.com" />
+            </div>
             {errors.email && <p className="form-error">{errors.email.message}</p>}
           </div>
 
           <div className="form-group">
             <label className="label">Parol</label>
-            <input {...register('password')} type="password" className="input" placeholder="••••••••" />
+            <div className="relative">
+              <KeyRound size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input {...register('password')} type="password" className="input pl-9" placeholder="••••••••" />
+            </div>
             {errors.password && <p className="form-error">{errors.password.message}</p>}
           </div>
 
           {requires2FA && (
             <div className="form-group">
               <label className="label">2FA Kodu</label>
-              <input {...register('totp_code')} type="text" className="input" placeholder="123456" maxLength={6} />
+              <input {...register('totp_code')} type="text" className="input tracking-widest text-center" placeholder="— — — — — —" maxLength={6} />
             </div>
           )}
 
-          <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-            {loading ? (
-              <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }}></span> Giriş edilir...</>
-            ) : 'Daxil ol'}
+          <button type="submit" disabled={loading} className="btn-primary w-full mt-2">
+            {loading ? <><Loader2 size={15} className="animate-spin" /> Giriş edilir...</> : 'Daxil ol'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', fontSize: '0.875rem', color: '#6b7280', marginTop: '1.5rem' }}>
+        <p className="text-center text-sm text-slate-400 mt-6">
           Hesabınız yoxdur?{' '}
-          <Link href="/register" style={{ color: '#7c3aed', fontWeight: 600, textDecoration: 'none' }}>
+          <Link href="/register" className="text-indigo-600 font-semibold hover:text-indigo-700">
             Qeydiyyat
           </Link>
         </p>

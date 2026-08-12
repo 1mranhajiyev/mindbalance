@@ -15,48 +15,65 @@ const navItems = [
 export default function PatientSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { logout } = useAuthStore()
+  const { user, logout } = useAuthStore()
 
-  const handleLogout = () => {
-    logout()
-    router.push('/login')
-  }
+  const handleLogout = () => { logout(); router.push('/login') }
+
+  const initials = user?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0,2).toUpperCase() || 'P'
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-100 flex flex-col fixed h-full z-10">
-      <div className="p-6 border-b border-gray-100">
+    <aside className="w-64 bg-white border-r border-slate-100 flex flex-col fixed h-full z-10">
+      {/* Brand */}
+      <div className="px-5 py-5 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-violet-600 rounded-xl flex items-center justify-center">
-            <span className="text-white text-sm">🧠</span>
+          <div className="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26A7 7 0 0 0 12 2z"/>
+              <line x1="9" y1="21" x2="15" y2="21"/>
+            </svg>
           </div>
           <div>
-            <p className="font-bold text-gray-900 text-sm">MindBalance</p>
-            <p className="text-xs text-gray-400">Pasiyent</p>
+            <p className="font-bold text-slate-900 text-sm tracking-tight">MindBalance</p>
+            <p className="text-xs text-slate-400">Pasiyent paneli</p>
           </div>
         </div>
       </div>
-      <nav className="flex-1 p-4 space-y-1">
-        {navItems.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-              pathname === href
-                ? 'bg-violet-50 text-violet-700'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <Icon size={18} />
-            {label}
-          </Link>
-        ))}
+
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {navItems.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                active
+                  ? 'bg-indigo-50 text-indigo-700'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <Icon size={16} strokeWidth={active ? 2.5 : 2} />
+              {label}
+            </Link>
+          )
+        })}
       </nav>
-      <div className="p-4 border-t border-gray-100">
+
+      {/* User + Logout */}
+      <div className="px-3 py-4 border-t border-slate-100 space-y-1">
+        <div className="flex items-center gap-3 px-3 py-2">
+          <div className="avatar avatar-sm">{initials}</div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-slate-900 truncate">{user?.full_name}</p>
+            <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+          </div>
+        </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 w-full"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 w-full transition-all"
         >
-          <LogOut size={18} />
+          <LogOut size={16} />
           Çıxış
         </button>
       </div>

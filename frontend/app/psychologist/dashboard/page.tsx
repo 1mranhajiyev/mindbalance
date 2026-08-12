@@ -26,47 +26,55 @@ export default function PsychologistDashboard() {
   })
 
   const stats = [
-    { label: 'Aktiv pasiyent', value: dashboard?.active_patients ?? '-', icon: Users, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Cəmi seans', value: dashboard?.total_sessions ?? '-', icon: Calendar, color: 'bg-purple-50 text-purple-600' },
-    { label: 'Gözləyən tapşırıq', value: dashboard?.pending_tasks ?? '-', icon: ClipboardList, color: 'bg-amber-50 text-amber-600' },
-    { label: 'Seans qiyməti', value: dashboard?.session_price ? `${dashboard.session_price} AZN` : '-', icon: TrendingUp, color: 'bg-green-50 text-green-600' },
+    { label: 'Aktiv pasiyent', value: dashboard?.active_patients ?? '0', icon: Users, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Cəmi seans', value: dashboard?.total_sessions ?? '0', icon: Calendar, color: 'bg-indigo-50 text-indigo-600' },
+    { label: 'Gözləyən tapşırıq', value: dashboard?.pending_tasks ?? '0', icon: ClipboardList, color: 'bg-amber-50 text-amber-600' },
+    { label: 'Seans qiyməti', value: dashboard?.session_price ? `${dashboard.session_price} AZN` : '—', icon: TrendingUp, color: 'bg-emerald-50 text-emerald-600' },
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Salam, {user?.full_name?.split(' ')[0]} 👋</h1>
-        <p className="text-gray-500 mt-1">Bugünkü iş gününüzə baxın</p>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Salam, {user?.full_name?.split(' ')[0]}</h1>
+        <p className="text-slate-500 text-sm mt-1">Bugünkü iş gününüzə baxın</p>
       </div>
+
+      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="card flex items-center gap-4">
-            <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${color}`}>
-              <Icon size={20} />
+          <div key={label} className="card">
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${color}`}>
+              <Icon size={18} />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{value}</p>
-              <p className="text-xs text-gray-500">{label}</p>
-            </div>
+            <p className="text-2xl font-bold text-slate-900 tracking-tight">{value}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{label}</p>
           </div>
         ))}
       </div>
+
+      {/* Today’s sessions */}
       <div className="card">
-        <h2 className="font-semibold text-gray-900 mb-4">Bugünkü seanslar</h2>
-        {todaySessions.length === 0
-          ? <p className="text-gray-400 text-sm">Bu gün üçün seans yoxdur.</p>
-          : <div className="divide-y divide-gray-50">
-              {todaySessions.map((s: any) => (
-                <div key={s.id} className="py-3 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">{format(new Date(s.scheduled_at), 'HH:mm', { locale: az })}</p>
-                    <p className="text-sm text-gray-500">{s.duration_minutes} dəqə • {s.format}</p>
-                  </div>
-                  <span className="text-xs bg-primary-100 text-primary-700 px-3 py-1 rounded-full">Planlı</span>
+        <h2 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wide">Bugünkü seanslar</h2>
+        {todaySessions.length === 0 ? (
+          <div className="empty-state py-10">
+            <div className="empty-state-icon"><Calendar size={32} /></div>
+            <h3>Seans yoxdur</h3>
+            <p>Bu gün üçün planlanmış seans tapılmadı.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-50">
+            {todaySessions.map((s: any) => (
+              <div key={s.id} className="py-3 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">{format(new Date(s.scheduled_at), 'HH:mm', { locale: az })}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{s.duration_minutes} dəqə · {s.format}</p>
                 </div>
-              ))}
-            </div>
-        }
+                <span className="badge badge-primary">Planlı</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
