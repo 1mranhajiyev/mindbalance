@@ -23,7 +23,7 @@ export default function JournalPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">📖 Gündəlikim</h1>
+      <h1 className="text-2xl font-bold text-gray-900">📖 Gündəliyim</h1>
       <div className="card space-y-4">
         <h2 className="font-semibold text-gray-900">Yeni qeyd</h2>
         <div className="grid grid-cols-2 gap-3">
@@ -32,7 +32,7 @@ export default function JournalPage() {
             <input value={emotion} onChange={e => setEmotion(e.target.value)} className="input" placeholder="Narahat, xoşbəxt..." />
           </div>
           <div>
-            <label className="label">Had isə</label>
+            <label className="label">Hadisə</label>
             <input value={event} onChange={e => setEvent(e.target.value)} className="input" placeholder="Bu gün nə oldu?" />
           </div>
         </div>
@@ -49,7 +49,7 @@ export default function JournalPage() {
           <div key={e.id} className="card">
             <div className="flex justify-between items-start mb-2">
               <div className="flex gap-2">
-                {e.emotion && <span className="bg-primary-100 text-primary-700 text-xs px-2 py-1 rounded-full">{e.emotion}</span>}
+                {e.emotion && <span className="bg-violet-100 text-violet-700 text-xs px-2 py-1 rounded-full">{e.emotion}</span>}
                 {e.event && <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">{e.event}</span>}
               </div>
               <span className="text-xs text-gray-400">{format(new Date(e.created_at), 'd MMM, HH:mm', { locale: az })}</span>

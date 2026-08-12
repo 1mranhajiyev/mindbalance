@@ -6,7 +6,7 @@ import { Home, BookOpen, Calendar, TrendingUp, CheckSquare, LogOut } from 'lucid
 
 const navItems = [
   { href: '/patient/dashboard', label: 'Ana Səhifə', icon: Home },
-  { href: '/patient/journal', label: 'Gündəlik', icon: BookOpen },
+  { href: '/patient/journal', label: 'Gündəliyim', icon: BookOpen },
   { href: '/patient/sessions', label: 'Seanslar', icon: Calendar },
   { href: '/patient/progress', label: 'İnkişaf', icon: TrendingUp },
   { href: '/patient/tasks', label: 'Tapşırıqlar', icon: CheckSquare },
