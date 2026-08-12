@@ -9,13 +9,13 @@ export const sessionStatusLabels: Record<string, string> = {
 }
 
 export const sessionStatusStyles: Record<string, string> = {
-  scheduled: 'bg-violet-100 text-violet-700',
+  scheduled: 'bg-primary-100 text-primary-700',
   patient_waiting: 'bg-amber-100 text-amber-700',
   psychologist_waiting: 'bg-amber-100 text-amber-700',
-  active: 'bg-blue-100 text-blue-700',
-  in_progress: 'bg-blue-100 text-blue-700',
-  completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-gray-100 text-gray-600',
+  active: 'bg-teal-100 text-teal-700',
+  in_progress: 'bg-teal-100 text-teal-700',
+  completed: 'bg-emerald-100 text-emerald-700',
+  cancelled: 'bg-slate-100 text-slate-600',
 }
 
 export function resolveSessionCallState(session: { call_state?: string; status?: string }): string {

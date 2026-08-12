@@ -29,6 +29,16 @@ export default function LoginPage() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) })
 
+  // URL-də parol/email qalmasın (JS yüklənməyəndə form GET ilə gedə bilər)
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has('email') && !url.searchParams.has('password')) return
+    url.searchParams.delete('email')
+    url.searchParams.delete('password')
+    const clean = url.pathname + (url.search || '')
+    window.history.replaceState({}, '', clean)
+  }, [])
+
   useEffect(() => {
     if (!hydrated || !accessToken || !user) return
     router.replace(user.role === 'patient' ? '/patient/dashboard' : '/psychologist/dashboard')
@@ -54,8 +64,7 @@ export default function LoginPage() {
   return (
     <div className="auth-bg">
       <div className="auth-card">
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-8">
+        <div className="flex flex-col items-center mb-8 animate-scale-in">
           <div className="logo-icon mb-4">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26A7 7 0 0 0 12 2z"/>
@@ -68,7 +77,16 @@ export default function LoginPage() {
 
         <ApiErrorAlert message={error} />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          method="post"
+          action="/login"
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault()
+            void handleSubmit(onSubmit)(e)
+          }}
+          className="space-y-4"
+        >
           <div className="form-group">
             <label className="label">Email</label>
             <div className="relative">
@@ -101,7 +119,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-slate-400 mt-6">
           Hesabınız yoxdur?{' '}
-          <Link href="/register" className="text-indigo-600 font-semibold hover:text-indigo-700">
+          <Link href="/register" className="text-primary-600 font-semibold hover:text-primary-700 transition-colors">
             Qeydiyyat
           </Link>
         </p>

@@ -1,15 +1,12 @@
-import PatientSidebar from '@/components/patient/PatientSidebar'
 import AuthGuard from '@/components/AuthGuard'
 import OnboardingGuard from '@/components/OnboardingGuard'
+import PatientAppShell from '@/components/layout/PatientAppShell'
 
 export default function PatientLayout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard requiredRole="patient">
       <OnboardingGuard>
-        <div className="flex min-h-screen bg-slate-50">
-          <PatientSidebar />
-          <main className="ml-64 flex-1 p-8">{children}</main>
-        </div>
+        <PatientAppShell>{children}</PatientAppShell>
       </OnboardingGuard>
     </AuthGuard>
   )

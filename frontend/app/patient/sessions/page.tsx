@@ -18,19 +18,21 @@ export default function SessionsPage() {
   const past = sessions.filter((s: any) => isPastSession(s))
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">📅 Seanslarım</h1>
+    <div className="space-y-6 animate-fade-in">
+      <div className="page-header">
+        <h1 className="page-title">📅 Seanslarım</h1>
+      </div>
       <div>
-        <h2 className="font-semibold text-gray-700 mb-3">Gələcək seanslar</h2>
-        <div className="space-y-3">
+        <h2 className="section-title">Gələcək seanslar</h2>
+        <div className="space-y-3 stagger-children">
           {upcoming.length === 0 && <p className="text-gray-400 text-sm">Planlanan seans yoxdur.</p>}
           {upcoming.map((s: any) => (
-            <div key={s.id} className="card flex items-center justify-between gap-3">
-              <div>
+            <div key={s.id} className="card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="min-w-0">
                 <p className="font-semibold text-gray-900">{format(new Date(s.scheduled_at), 'd MMMM, HH:mm', { locale: az })}</p>
                 <p className="text-sm text-gray-500">{s.duration_minutes} dəqə • {s.format === 'online' ? 'Online' : 'Ofis'}</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getSessionStyle(s)}`}>
                   {getSessionLabel(s)}
                 </span>
@@ -45,11 +47,11 @@ export default function SessionsPage() {
         </div>
       </div>
       <div>
-        <h2 className="font-semibold text-gray-700 mb-3">Keçmiş seanslar</h2>
+        <h2 className="section-title">Keçmiş seanslar</h2>
         <div className="space-y-3">
           {past.length === 0 && <p className="text-gray-400 text-sm">Keçmiş seans yoxdur.</p>}
           {past.map((s: any) => (
-            <div key={s.id} className="card flex items-center justify-between">
+            <div key={s.id} className="card flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <p className="font-semibold text-gray-900">{format(new Date(s.scheduled_at), 'd MMMM yyyy, HH:mm', { locale: az })}</p>
                 <p className="text-sm text-gray-500">{s.duration_minutes} dəqə</p>

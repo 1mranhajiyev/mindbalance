@@ -54,7 +54,7 @@ function AssessmentDetails({ assessment }: { assessment: Record<string, unknown>
               return (
                 <div key={key} className="bg-slate-50 rounded-lg px-3 py-2">
                   <p className="text-xs text-slate-500">{assessmentLabels[key]}</p>
-                  <p className="text-sm font-semibold text-indigo-600">{String(value)}/10</p>
+                  <p className="text-sm font-semibold text-primary-600">{String(value)}/10</p>
                 </div>
               )
             })}
@@ -107,8 +107,8 @@ export default function RequestsPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                      <span className="text-indigo-700 font-bold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+                      <span className="text-primary-700 font-bold text-sm">
                         {r.patient_name?.[0]?.toUpperCase() || 'P'}
                       </span>
                     </div>
@@ -141,7 +141,7 @@ export default function RequestsPage() {
                   <button
                     onClick={() => respond.mutate({ id: r.id, status: 'accepted' })}
                     disabled={respond.isPending}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary-600 text-white hover:bg-primary-700 transition-all disabled:opacity-50"
                   >
                     <UserCheck size={13} /> Qəbul et
                   </button>

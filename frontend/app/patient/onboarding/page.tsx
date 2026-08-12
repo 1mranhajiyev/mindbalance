@@ -82,7 +82,7 @@ export default function OnboardingPage() {
   const stepIndex = steps.findIndex(s => s.id === step)
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-4 py-8 sm:py-12 animate-fade-in">
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-10">
         <div className="logo-icon">
@@ -107,7 +107,7 @@ export default function OnboardingPage() {
           return (
             <div key={s.id} className="flex items-center gap-2">
               <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                active ? 'bg-indigo-600 text-white' :
+                active ? 'bg-primary-600 text-white' :
                 done ? 'bg-emerald-100 text-emerald-700' :
                 'bg-slate-100 text-slate-400'
               }`}>
@@ -157,13 +157,13 @@ export default function OnboardingPage() {
                   <div key={key}>
                     <div className="flex justify-between items-center mb-1.5">
                       <label className="label mb-0 text-sm font-medium text-slate-700">{label}</label>
-                      <span className="text-sm font-bold text-indigo-600 tabular-nums w-8 text-right">{scales[key]} / 10</span>
+                      <span className="text-sm font-bold text-primary-600 tabular-nums w-8 text-right">{scales[key]} / 10</span>
                     </div>
                     <input
                       type="range" min={0} max={10} step={1}
                       value={scales[key]}
                       onChange={e => setScales(s => ({ ...s, [key]: Number(e.target.value) }))}
-                      className="w-full h-1.5 rounded-full appearance-none bg-slate-100 accent-indigo-600 cursor-pointer"
+                      className="w-full h-1.5 rounded-full appearance-none bg-slate-100 accent-primary-600 cursor-pointer"
                     />
                     <div className="flex justify-between text-xs text-slate-300 mt-1">
                       <span>0</span><span>5</span><span>10</span>
@@ -211,8 +211,8 @@ export default function OnboardingPage() {
                 onClick={() => setSelectedPsych(p.id)}
                 className={`card text-left transition-all ${
                   selectedPsych === p.id
-                    ? 'border-2 border-indigo-500 bg-indigo-50/40'
-                    : 'border border-slate-100 hover:border-indigo-200'
+                    ? 'border-2 border-primary-500 bg-primary-50/40'
+                    : 'border border-slate-100 hover:border-primary-200'
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -222,14 +222,14 @@ export default function OnboardingPage() {
                       <p className="font-semibold text-slate-900 text-sm">{p.full_name}</p>
                       {p.session_price && <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">{p.session_price} ₼/seans</span>}
                     </div>
-                    {p.specialization && <p className="text-xs text-indigo-600 mt-0.5 font-medium">{p.specialization}</p>}
+                    {p.specialization && <p className="text-xs text-primary-600 mt-0.5 font-medium">{p.specialization}</p>}
                     {p.bio && <p className="text-xs text-slate-500 mt-1.5 line-clamp-2">{p.bio}</p>}
                     <div className="flex items-center gap-3 mt-2">
                       {p.experience_years && <span className="text-xs text-slate-400">{p.experience_years} il təcrübə</span>}
                       {p.languages && <span className="text-xs text-slate-400">{p.languages}</span>}
                     </div>
                   </div>
-                  {selectedPsych === p.id && <Check size={16} className="text-indigo-600 mt-0.5 shrink-0" />}
+                  {selectedPsych === p.id && <Check size={16} className="text-primary-600 mt-0.5 shrink-0" />}
                 </div>
               </button>
             ))}

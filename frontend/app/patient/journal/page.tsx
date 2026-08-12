@@ -51,7 +51,7 @@ export default function JournalPage() {
           <div key={e.id} className="card">
             <div className="flex justify-between items-start mb-2">
               <div className="flex gap-2">
-                {e.emotion && <span className="bg-violet-100 text-violet-700 text-xs px-2 py-1 rounded-full">{e.emotion}</span>}
+                {e.emotion && <span className="bg-primary-100 text-primary-700 text-xs px-2 py-1 rounded-full">{e.emotion}</span>}
                 {e.event && <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">{e.event}</span>}
               </div>
               <span className="text-xs text-gray-400">{format(new Date(e.created_at), 'd MMM, HH:mm', { locale: az })}</span>

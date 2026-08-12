@@ -32,12 +32,12 @@ export default function PatientDashboard() {
   const pendingTasks = taskList.filter((t: any) => !t.is_completed)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Salam, {user?.full_name?.split(' ')[0]}</h1>
-        <p className="text-slate-500 text-sm mt-1">Bugün özünü necə hiss edirsən?</p>
+        <h1 className="page-title">Salam, {user?.full_name?.split(' ')[0]}</h1>
+        <p className="page-subtitle">Bugün özünü necə hiss edirsən?</p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 stagger-children">
         <div className="lg:col-span-2 space-y-6">
           <CheckInCard />
           <GoalsWidget goals={goalList} />

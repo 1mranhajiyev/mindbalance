@@ -66,12 +66,12 @@ export default function CheckInCard() {
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <label className="label mb-0">Şiddət</label>
-              <span className="text-xs font-semibold text-indigo-600 tabular-nums">{intensity} / 10</span>
+              <span className="text-xs font-semibold text-primary-600 tabular-nums">{intensity} / 10</span>
             </div>
             <input
               type="range" min={0} max={10} value={intensity}
               onChange={e => setIntensity(Number(e.target.value))}
-              className="w-full h-1.5 rounded-full appearance-none bg-slate-100 accent-indigo-600 cursor-pointer"
+              className="w-full h-1.5 rounded-full appearance-none bg-slate-100 accent-primary-600 cursor-pointer"
             />
           </div>
           <div>

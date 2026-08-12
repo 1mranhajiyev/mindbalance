@@ -36,10 +36,10 @@ export default function PsychologistSessions() {
   })
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Seanslar</h1>
-        <p className="text-gray-500 mt-1">Bütün seanslarınızı idarə edin</p>
+    <div className="space-y-6 animate-fade-in">
+      <div className="page-header">
+        <h1 className="page-title">Seanslar</h1>
+        <p className="page-subtitle">Bütün seanslarınızı idarə edin</p>
       </div>
 
       <div className="card space-y-3">
@@ -84,12 +84,12 @@ export default function PsychologistSessions() {
         ) : (
           <div className="space-y-3">
             {sessions.map((s: any) => (
-              <div key={s.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl gap-3">
-                <div>
+              <div key={s.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-primary-50/50 rounded-xl gap-3 transition-colors hover:bg-primary-50">
+                <div className="min-w-0">
                   <p className="font-medium text-gray-900 text-sm">{s.patient_name || 'Pasiyent'}</p>
                   <p className="text-xs text-gray-500">{format(new Date(s.scheduled_at), 'd MMMM yyyy, HH:mm', { locale: az })}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
                   {canJoinSession(s) && (
                     <button
                       onClick={() => router.push(`/psychologist/sessions/${s.id}/call`)}

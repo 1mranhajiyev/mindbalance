@@ -1,9 +1,10 @@
 'use client'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth'
 import { useQueryClient } from '@tanstack/react-query'
 import { LayoutDashboard, Users, Calendar, ClipboardList, BookOpen, BarChart2, CreditCard, LogOut, Inbox, UserCircle } from 'lucide-react'
+import { SidebarNav } from '@/components/layout/SidebarNav'
 
 const navItems = [
   { href: '/psychologist/dashboard',  label: 'Dashboard',      icon: LayoutDashboard },
@@ -11,14 +12,17 @@ const navItems = [
   { href: '/psychologist/patients',   label: 'Pasiyentlər',    icon: Users },
   { href: '/psychologist/sessions',   label: 'Seanslar',       icon: Calendar },
   { href: '/psychologist/tasks',      label: 'Tapşırıqlar',    icon: ClipboardList },
-  { href: '/psychologist/notes',      label: 'Qeydlər',        icon: BookOpen },
+  { href: '/psychologist/notes',        label: 'Qeydlər',        icon: BookOpen },
   { href: '/psychologist/statistics', label: 'Statistika',     icon: BarChart2 },
   { href: '/psychologist/payments',   label: 'Ödənişlər',      icon: CreditCard },
   { href: '/psychologist/profile',    label: 'Profil',         icon: UserCircle },
 ]
 
-export default function PsychologistSidebar() {
-  const pathname = usePathname()
+interface Props {
+  onNavigate?: () => void
+}
+
+export default function PsychologistSidebar({ onNavigate }: Props) {
   const router = useRouter()
   const { user, logout } = useAuthStore()
   const qc = useQueryClient()
@@ -32,8 +36,8 @@ export default function PsychologistSidebar() {
   const initials = user?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'P'
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-100 flex flex-col fixed h-full z-10">
-      <div className="px-5 py-5 border-b border-slate-100">
+    <aside className="sidebar">
+      <div className="px-2 py-1 border-b border-primary-100 pb-4 mb-1">
         <div className="flex items-center gap-3">
           <div className="logo-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -43,32 +47,27 @@ export default function PsychologistSidebar() {
           </div>
           <div>
             <p className="font-bold text-slate-900 text-sm tracking-tight">MindBalance</p>
-            <p className="text-xs text-slate-400">Psixoloq paneli</p>
+            <p className="text-xs text-primary-600/70">Psixoloq paneli</p>
           </div>
         </div>
       </div>
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href
-          return (
-            <Link key={href} href={href} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              active ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-            }`}>
-              <Icon size={16} strokeWidth={active ? 2.5 : 2} />
-              {label}
-            </Link>
-          )
-        })}
-      </nav>
-      <div className="px-3 py-4 border-t border-slate-100 space-y-1">
-        <Link href="/psychologist/profile" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all">
+      <SidebarNav items={navItems} onNavigate={onNavigate} />
+      <div className="px-2 py-3 border-t border-primary-100 space-y-1 mt-auto">
+        <Link
+          href="/psychologist/profile"
+          onClick={onNavigate}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all duration-200"
+        >
           <div className="avatar avatar-sm">{initials}</div>
           <div className="min-w-0">
             <p className="text-xs font-semibold text-slate-900 truncate">{user?.full_name}</p>
             <p className="text-xs text-slate-400 truncate">{user?.email}</p>
           </div>
         </Link>
-        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900 w-full transition-all">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:bg-primary-50 hover:text-primary-700 w-full transition-all duration-200"
+        >
           <LogOut size={16} />
           Çıxış
         </button>

@@ -36,7 +36,7 @@ export default function PatientDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link href="/psychologist/patients" className="inline-flex items-center gap-1 text-sm text-indigo-600">
+      <Link href="/psychologist/patients" className="inline-flex items-center gap-1 text-sm text-primary-600">
         <ArrowLeft size={16} /> Geri
       </Link>
 

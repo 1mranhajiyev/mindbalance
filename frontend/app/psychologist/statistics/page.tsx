@@ -22,7 +22,7 @@ export default function PsychologistStatistics() {
           { label: 'Bu ay gəlir', value: stats?.monthly_revenue ? `${stats.monthly_revenue} ₼` : '-' },
         ].map(item => (
           <div key={item.label} className="card">
-            <p className="text-3xl font-bold text-violet-600">{item.value}</p>
+            <p className="text-3xl font-bold text-primary-600">{item.value}</p>
             <p className="text-sm text-gray-500 mt-1">{item.label}</p>
           </div>
         ))}

@@ -30,7 +30,7 @@ export default function PsychologistDashboard() {
 
   const stats = [
     { label: 'Aktiv pasiyent', value: dashboard?.active_patients ?? '0', icon: Users, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Cəmi seans', value: dashboard?.total_sessions ?? '0', icon: Calendar, color: 'bg-indigo-50 text-indigo-600' },
+    { label: 'Cəmi seans', value: dashboard?.total_sessions ?? '0', icon: Calendar, color: 'bg-primary-50 text-primary-600' },
     { label: 'Gözləyən tapşırıq', value: dashboard?.pending_tasks ?? '0', icon: ClipboardList, color: 'bg-amber-50 text-amber-600' },
     { label: 'Seans qiyməti', value: dashboard?.session_price ? `${dashboard.session_price} AZN` : '—', icon: TrendingUp, color: 'bg-emerald-50 text-emerald-600' },
   ]

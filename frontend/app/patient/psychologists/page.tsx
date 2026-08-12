@@ -85,18 +85,18 @@ export default function PatientPsychologistsPage() {
                   onClick={() => setSelectedPsych(p.id)}
                   className={`text-left p-3 rounded-xl border transition-all ${
                     selectedPsych === p.id
-                      ? 'border-indigo-500 bg-indigo-50/40'
-                      : 'border-slate-100 hover:border-indigo-200'
+                      ? 'border-primary-500 bg-primary-50/40'
+                      : 'border-slate-100 hover:border-primary-200'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-sm text-slate-900">{p.full_name}</p>
                       {p.specialization && (
-                        <p className="text-xs text-indigo-600 mt-0.5">{p.specialization}</p>
+                        <p className="text-xs text-primary-600 mt-0.5">{p.specialization}</p>
                       )}
                     </div>
-                    {selectedPsych === p.id && <Check size={16} className="text-indigo-600" />}
+                    {selectedPsych === p.id && <Check size={16} className="text-primary-600" />}
                   </div>
                 </button>
               ))}
@@ -135,7 +135,7 @@ export default function PatientPsychologistsPage() {
             <div key={p.id} className="card flex items-center justify-between">
               <div>
                 <p className="font-semibold text-slate-900">{p.full_name}</p>
-                {p.specialization && <p className="text-xs text-indigo-600 mt-0.5">{p.specialization}</p>}
+                {p.specialization && <p className="text-xs text-primary-600 mt-0.5">{p.specialization}</p>}
                 {p.assigned_at && (
                   <p className="text-xs text-slate-400 mt-1">
                     {format(new Date(p.assigned_at), 'd MMM yyyy', { locale: az })} tarixindən

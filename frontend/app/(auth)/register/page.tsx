@@ -100,11 +100,11 @@ export default function RegisterPage() {
                     gap: '0.5rem',
                     padding: '1rem',
                     borderRadius: '0.75rem',
-                    border: selectedRole === role ? '2px solid #7c3aed' : '1.5px solid #e5e7eb',
-                    background: selectedRole === role ? '#f5f3ff' : '#ffffff',
+                    border: selectedRole === role ? '2px solid #4a8578' : '1.5px solid #e2ebe6',
+                    background: selectedRole === role ? '#f0f7f4' : '#ffffff',
                     cursor: 'pointer',
                     transition: 'all 180ms ease',
-                    color: selectedRole === role ? '#7c3aed' : '#374151',
+                    color: selectedRole === role ? '#3d6f63' : '#374151',
                     fontWeight: selectedRole === role ? 600 : 500,
                     fontSize: '0.875rem',
                   }}
@@ -131,7 +131,7 @@ export default function RegisterPage() {
 
         <p style={{ textAlign: 'center', fontSize: '0.875rem', color: '#6b7280', marginTop: '1.5rem' }}>
           Artıq hesabınız var?{' '}
-          <Link href="/login" style={{ color: '#7c3aed', fontWeight: 600, textDecoration: 'none' }}>Daxil olun</Link>
+          <Link href="/login" style={{ color: '#4a8578', fontWeight: 600, textDecoration: 'none' }}>Daxil olun</Link>
         </p>
       </div>
     </div>

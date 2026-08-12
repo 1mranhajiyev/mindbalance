@@ -62,8 +62,11 @@ export default function AuthGuard({ children, requiredRole }: Props) {
 
   if (!hydrated || isValidating || !accessToken || !user) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-slate-400 text-sm">Yoxlanılır...</div>
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 animate-fade-in">
+          <div className="spinner w-8 h-8 border-[3px]" />
+          <p className="text-slate-400 text-sm">Yoxlanılır...</p>
+        </div>
       </div>
     )
   }
