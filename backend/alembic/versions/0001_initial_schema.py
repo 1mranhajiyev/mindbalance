@@ -16,9 +16,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # --- ENUM ---
-    user_role = postgresql.ENUM('patient', 'psychologist', name='user_role', create_type=True)
-    user_role.create(op.get_bind(), checkfirst=True)
+    # DROP if exists first to avoid duplicate errors on re-run
+    op.execute("DROP TYPE IF EXISTS user_role CASCADE")
+    op.execute("CREATE TYPE user_role AS ENUM ('patient', 'psychologist')")
 
     # --- users ---
     op.create_table(
@@ -28,7 +28,7 @@ def upgrade() -> None:
         sa.Column('phone', sa.String(), nullable=True, unique=True),
         sa.Column('full_name', sa.String(), nullable=False),
         sa.Column('hashed_password', sa.String(), nullable=False),
-        sa.Column('role', sa.Enum('patient', 'psychologist', name='user_role'), nullable=False),
+        sa.Column('role', sa.Enum('patient', 'psychologist', name='user_role', create_type=False), nullable=False),
         sa.Column('is_active', sa.Boolean(), server_default=sa.true()),
         sa.Column('is_verified', sa.Boolean(), server_default=sa.false()),
         sa.Column('totp_secret', sa.String(), nullable=True),
@@ -184,4 +184,4 @@ def downgrade() -> None:
     op.drop_table('patient_profiles')
     op.drop_table('psychologist_profiles')
     op.drop_table('users')
-    op.execute("DROP TYPE IF EXISTS user_role")
+    op.execute('DROP TYPE IF EXISTS user_role')
